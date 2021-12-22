@@ -1,0 +1,28 @@
+version: 0.2
+env:
+    variables:
+        BUILDSPEC_PATH: "pipeline/"
+        BUILD_SCRIPT_PATH: "scripts"
+        ENV_PATH: "pipeline/env"
+        ENV_SH: "env.sh"
+phases:
+    install:
+        commands:
+            - $CODEBUILD_SRC_DIR/$BUILDSPEC_PATH/$BUILD_SCRIPT_PATH/phase_1_install.sh
+        finally:
+            - $CODEBUILD_SRC_DIR/$BUILDSPEC_PATH/$BUILD_SCRIPT_PATH/phase_1_install_finally.sh
+    pre_build:
+        commands:
+            - $CODEBUILD_SRC_DIR/$BUILDSPEC_PATH/$BUILD_SCRIPT_PATH/phase_2_prebuild.sh
+        finally:
+            - $CODEBUILD_SRC_DIR/$BUILDSPEC_PATH/$BUILD_SCRIPT_PATH/phase_2_prebuild_finally.sh
+    build:
+        commands:
+            - $CODEBUILD_SRC_DIR/$BUILDSPEC_PATH/$BUILD_SCRIPT_PATH/phase_3_build.sh
+        finally:
+            - $CODEBUILD_SRC_DIR/$BUILDSPEC_PATH/$BUILD_SCRIPT_PATH/phase_3_build_finally.sh
+    post_build:
+        commands:
+            - $CODEBUILD_SRC_DIR/$BUILDSPEC_PATH/$BUILD_SCRIPT_PATH/phase_4_postbuild.sh
+        finally:
+            - $CODEBUILD_SRC_DIR/$BUILDSPEC_PATH/$BUILD_SCRIPT_PATH/phase_4_postbuild_finally.sh
