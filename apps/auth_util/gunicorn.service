@@ -8,7 +8,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=/opt/local/apps/
-ExecStart=/usr/bin/gunicorn -b 0.0.0.0:5000 --chdir py_login/ server:app
+ExecStart=/usr/bin/gunicorn -b 0.0.0.0:5000 --chdir auth_util/ server:app
 
 [Install]
 WantedBy=multi-user.target

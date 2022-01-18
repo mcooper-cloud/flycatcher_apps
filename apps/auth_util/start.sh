@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export APP_PATH=/opt/local/apps/py_login/
+export APP_PATH=/opt/local/apps/auth_util/
 export DEBIAN_FRONTEND="noninteractive"
 export NGINX_CONF=nginx_proxy.conf
 export DHPARAMS_CONF=nginx_ssl_params.conf
