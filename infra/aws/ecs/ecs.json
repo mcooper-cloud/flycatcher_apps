@@ -22,6 +22,21 @@
             "Description": "Logo URL",
             "Default": "USER_INPUT_REQUIRED"
         },
+        "Auth0Domain": {
+            "Type": "String",
+            "Description": "Auth0 Tenant Domain",
+            "Default": "example.auth0.com"
+        },
+        "Auth0IssuerBaseURL": {
+            "Type": "String",
+            "Description": "Auth0 Issuer Base URL",
+            "Default": "example.us.auth0.com"
+        },
+        "Auth0Audience": {
+            "Type": "String",
+            "Description": "Auth0 API Audience",
+            "Default": "example.auth0.com"
+        },
         "VPCCIDR" : {
             "Description" : "An available CIDR block for creating a new VPC.",
             "Type": "String",
@@ -669,11 +684,77 @@
                                 ]]}
                             },
                             {
+                                "Name": "AUTH0_DOMAIN",
+                                "Value": {"Ref" : "Auth0Domain"}
+                            },
+                            {
+                                "Name": "AUTH0_ISSUER_BASE_URL",
+                                "Value": {"Ref" : "Auth0IssuerBaseURL"}
+                            },
+                            {
+                                "Name": "AUTH0_AUDIENCE",
+                                "Value": {"Ref" : "Auth0Audience"}
+                            },
+                            {
+                                "Name": "AUTH0_CALLBACK_URL",
+                                "Value": { "Fn::Join":["",[
+                                    { "Fn::If" : [
+                                        "LoadBalancerProtocol",
+                                        "http://",
+                                        "https://"
+                                    ]},
+                                    { "Fn::If" : [
+                                        "IsEmptyDomain",
+                                        {"Fn::GetAtt":["ECSALB","DNSName"]},
+                                        { "Fn::Join":[".", [
+                                            {"Ref": "AppSubDomain"}, 
+                                            {"Ref": "Domain"}
+                                        ]]}
+                                    ]},
+                                    "/callback"
+                                ]]}
+                            },
+                            {
                                 "Name": "LOAD_BALANCER_DNS",
                                 "Value": {"Fn::GetAtt":["ECSALB","DNSName"]}
                             }
                         ],
-                        "Secrets": []
+                        "Secrets": [
+                            {
+                                "Name": "AUTH0_CLIENT_ID",
+                                "ValueFrom":{"Fn::Join" : [ ":", [
+                                    "arn:aws:secretsmanager",
+                                    {"Ref" : "AWS::Region"},
+                                    {"Ref" : "AWS::AccountId"},
+                                    "secret",
+                                    {"Fn::Join" : [ "-", [
+                                        {"Ref" : "ProjectName" }, 
+                                        {"Ref" : "EnvironmentName" },
+                                        {"Ref" : "SystemNumber" },
+                                        "Auth0-App-ClientID"
+                                    ]]}
+                                ]]}
+                            },
+                            {
+                                "Name": "AUTH0_CLIENT_SECRET",
+                                "ValueFrom":{"Fn::Join" : [ ":", [
+                                    "arn:aws:secretsmanager",
+                                    {"Ref" : "AWS::Region"},
+                                    {"Ref" : "AWS::AccountId"},
+                                    "secret",
+                                    {"Fn::Join" : [ "-", [
+                                        {"Ref" : "ProjectName" }, 
+                                        {"Ref" : "EnvironmentName" },
+                                        {"Ref" : "SystemNumber" },
+                                        "Auth0-App-ClientSecret"
+                                    ]]}
+                                ]]}
+                            },
+                            {
+                                "Name": "APP_SESSION_SECRET",
+                                "ValueFrom": {"Ref" : "AppSessionSecret"}
+                            }                            
+                        ]
                     }
                 ],
                 "Volumes":[
@@ -1242,6 +1323,43 @@
         "ECSALBDNSName":{
             "Description":"Your ALB DNS URL",
             "Value":{"Fn::GetAtt":["ECSALB","DNSName"]}
-        }
+        },
+        "Auth0CallbackURL":{
+            "Description":"Auth0 callback URL (for dynamic tenant configuration)",
+            "Value": { "Fn::Join":["",[
+                { "Fn::If" : [
+                    "LoadBalancerProtocol",
+                    "http://",
+                    "https://"
+                ]},
+                { "Fn::If" : [
+                    "IsEmptyDomain",
+                    {"Fn::GetAtt":["ECSALB","DNSName"]},
+                    { "Fn::Join":[".", [
+                        {"Ref": "AppSubDomain"}, 
+                        {"Ref": "Domain"}
+                    ]]}
+                ]},
+                "/callback"
+            ]]}
+        },
+        "Auth0LogoutURL":{
+            "Description":"Auth0 logout URL (for dynamic tenant configuration)",
+            "Value":{ "Fn::Join":["",[
+                { "Fn::If" : [
+                    "LoadBalancerProtocol",
+                    "http://",
+                    "https://"
+                ]},
+                { "Fn::If" : [
+                    "IsEmptyDomain",
+                    {"Fn::GetAtt":["ECSALB","DNSName"]},
+                    { "Fn::Join":[".", [
+                        {"Ref": "AppSubDomain"}, 
+                        {"Ref": "Domain"}
+                    ]]}
+                ]},
+            ]]}
+        },
     }
 }
