@@ -1,0 +1,1247 @@
+{
+    "AWSTemplateFormatVersion":"2010-09-09",
+    "Parameters":{
+        "EnvironmentName": {
+            "Type": "String",
+            "Description": "Environment level of the project",
+            "AllowedValues" : ["dev", "staging", "uat", "qa", "test", "prod", "mgmt"],
+            "Default": "dev"
+        },
+        "ProjectName": {
+            "Type": "String",
+            "Description": "Human readable project name",
+            "Default": "USER_INPUT_REQUIRED"
+        },
+        "SystemNumber": {
+            "Type": "String",
+            "Description": "Internal system number",
+            "Default": "USER_INPUT_REQUIRED"
+        },
+        "LogoURL": {
+            "Type": "String",
+            "Description": "Logo URL",
+            "Default": "USER_INPUT_REQUIRED"
+        },
+        "VPCCIDR" : {
+            "Description" : "An available CIDR block for creating a new VPC.",
+            "Type": "String",
+            "MinLength": "9",
+            "MaxLength": "18",
+            "Default": "10.0.0.0/16",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
+        "SubnetOneCIDR" : {
+            "Description" : "An available subnet CIDR block within the range of the VPCCIDR range for creating a public subnet",
+            "Type": "String",
+            "MinLength": "9",
+            "MaxLength": "18",
+            "Default": "10.0.1.0/24",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
+        "SubnetTwoCIDR" : {
+            "Description" : "An available subnet CIDR block within the range of the VPCCIDR range for creating a public subnet",
+            "Type": "String",
+            "MinLength": "9",
+            "MaxLength": "18",
+            "Default": "10.0.2.0/24",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
+        "SubnetThreeCIDR" : {
+            "Description" : "An available subnet CIDR block within the range of the VPCCIDR range for creating a public subnet",
+            "Type": "String",
+            "MinLength": "9",
+            "MaxLength": "18",
+            "Default": "10.0.3.0/24",
+            "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
+            "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+        },
+        "KeyName":{
+            "Type":"AWS::EC2::KeyPair::KeyName",
+            "Description":"Name of an existing EC2 KeyPair to enable SSH access to the ECS instances."
+        },
+        "DesiredCapacity":{
+            "Type":"Number",
+            "Default":"1",
+            "Description":"Number of instances to launch in your ECS cluster."
+        },
+        "MaxSize":{
+            "Type":"Number",
+            "Default":"1",
+            "Description":"Maximum number of instances that can be launched in your ECS cluster."
+        },
+        "InstanceType":{
+            "Description":"EC2 instance type",
+            "Type":"String",
+            "Default":"t2.micro",
+            "AllowedValues":[
+                "t2.micro", "t2.small", "t2.medium", "t2.large",
+                "m3.medium", "m3.large", "m3.xlarge", "m3.2xlarge",
+                "m4.large", "m4.xlarge", "m4.2xlarge", "m4.4xlarge", "m4.10xlarge",
+                "c4.large", "c4.xlarge", "c4.2xlarge", "c4.4xlarge", "c4.8xlarge",
+                "c3.large", "c3.xlarge", "c3.2xlarge", "c3.4xlarge", "c3.8xlarge",
+                "r3.large", "r3.xlarge", "r3.2xlarge", "r3.4xlarge", "r3.8xlarge",
+                "i2.xlarge", "i2.2xlarge", "i2.4xlarge", "i2.8xlarge"
+            ],
+            "ConstraintDescription":"Please choose a valid instance type."
+        },
+        "WebAppVolumePath" : {
+            "Description" : "Path to the web app source code",
+            "Type": "String",
+            "Default": "/opt/local/apps/web_app/app"
+        },
+        "WebAppContainerPath" : {
+            "Description" : "Path to the web app source code mapped to the container",
+            "Type": "String",
+            "Default": "/root/apps/web_app/app"
+        },
+        "WebAppCommand" : {
+            "Description" : "Web app startup command",
+            "Type": "String",
+            "Default": "/root/apps/web_app/app/start.sh"
+        },
+        "WebAppImage" : {
+            "Description" : "Web app docker image",
+            "Type": "String",
+            "Default": "node:15.11.0-alpine3.10"
+        },
+        "WebAppCPU" : {
+            "Description" : "Web app docker container CPU count as string",
+            "Type": "String",
+            "Default": "10"
+        },
+        "WebAppMemory" : {
+            "Description" : "Web app docker container memory count as string",
+            "Type": "String",
+            "Default": "300"
+        },
+        "WebAppPort" : {
+            "Description" : "Port the web app will listen on",
+            "Type": "Number",
+            "Default": 7000
+        },
+        "LoadBalancerPort" : {
+            "Description" : "Port the load balancer will listen on",
+            "Type": "Number",
+            "Default": 80
+        },
+        "LoadBalancerHealthcheckPath" : {
+            "Description" : "Path where the load balancer will perform a healthcheck",
+            "Type": "String",
+            "Default": "/"
+        },
+        "StagingBucket" : {
+            "Description" : "S3 Staging bucket",
+            "Type": "String",
+            "Default": "staging_bucket"
+        },
+        "AppStagingPath" : {
+            "Description" : "S3 Staging path",
+            "Type": "String",
+            "Default": "apps/web_app/app/"
+        },
+        "Domain": {
+            "Type": "String",
+            "Description": "Domain used to create optional Route53 CNAME record",
+            "Default": "NO_VALUE"
+        },
+        "HostedZoneId": {
+            "Type": "String",
+            "Description": "Route53 Hosted Zone ID for creating optional CNAME record",
+            "Default": "NO_VALUE"
+        },
+        "AppSubDomain": {
+            "Type": "String",
+            "Description": "Subdomain identified by the record set",
+            "Default": "USER_INPUT_REQUIRED"
+        }
+    },
+    "Metadata" : {
+        "AWS::CloudFormation::Interface" : {
+            "ParameterGroups" : [
+                {
+                    "Label" : { "default":"General Settings" },
+                    "Parameters" : [ 
+                        "EnvironmentName", "ProjectName",
+                        "SystemNumber"
+                    ]
+                },
+                {
+                    "Label" : { "default":"VPC Settings" },
+                    "Parameters" : [ 
+                        "VPCCIDR", "SubnetTwoCIDR",
+                        "SubnetOneCIDR"
+                    ]
+                },
+                {
+                    "Label" : { "default":"EC2 Settings" },
+                    "Parameters" : [ 
+                        "KeyName", "DesiredCapacity",
+                        "MaxSize", "InstanceType"
+                    ]
+                },
+                {
+                    "Label" : { "default":"DNS Settings" },
+                    "Parameters" : [ 
+                        "Domain", "HostedZoneId",
+                        "AppSubDomain"
+                    ]
+                }
+            ]
+        }
+    },
+    "Mappings":{
+        "AWSRegionToAMI":{
+            "us-east-1": { "AMIID": "ami-0c5c9bcfb36b772fe" },
+            "us-east-2": { "AMIID": "ami-08e0b00e3616220d8" },
+            "us-west-1": { "AMIID": "ami-0a2c844e6bc854d96" },
+            "us-west-2": { "AMIID": "ami-0ec2e33c6e1161e98" },
+            "eu-west-1": { "AMIID": "ami-06bb94c46ddc47feb" },
+            "eu-central-1": { "AMIID": "ami-0dc66d9ab40653776" },
+            "ap-northeast-1": { "AMIID": "ami-0e361dfa337bad035" },
+            "ap-southeast-1": { "AMIID": "ami-0d7046e1d357b6b85" },
+            "ap-southeast-2": { "AMIID": "ami-0ecac5dc97c76f51d" },
+            "ca-central-1": { "AMIID": "ami-06ed354cf4fc6114c" }
+        },
+        "ECSOptimizedAMIParameterName" : {
+            "ECSOptimizedAMIParam" : {"Name" : "/aws/service/ecs/optimized-ami/amazon-linux-2/recommended/image_id"}
+        }
+    },
+    "Conditions" : {
+        "LoadBalancerProtocol" : {
+            "Fn::Equals": [
+                {"Ref": "LoadBalancerPort"},
+                80
+            ]
+        },
+        "IsEmptyDomain" : {
+            "Fn::Or" : [
+                {"Fn::Equals": [{"Ref": "Domain"},"NO_VALUE"]},
+                {"Fn::Equals": [{"Ref": "HostedZoneId"},"NO_VALUE"]}
+            ]
+        },
+        "IsNotEmptyDomain" : {
+            "Fn::And" : [
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "Domain"},"NO_VALUE"]}]},
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "Domain"},""]}]},
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "HostedZoneId"},"NO_VALUE"]}]},
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "HostedZoneId"},""]}]}
+            ]
+        },
+        "CreateCertificate" : {
+            "Fn::And" : [
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "Domain"},"NO_VALUE"]}]},
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "Domain"},""]}]},
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "HostedZoneId"},"NO_VALUE"]}]},
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "HostedZoneId"},""]}]},
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "LoadBalancerPort"},80]}]}
+            ]
+        },
+        "DeploySubdomain" : {
+            "Fn::Not" : [
+                {"Fn::Or" : [
+                    {"Fn::Equals": [{"Ref": "HostedZoneId"},"NO_VALUE"]},
+                    {"Fn::Equals": [{"Ref": "HostedZoneId"},""]}
+                ]}
+            ]
+        }
+    },
+    "Resources":{
+        "VPC": {
+            "Type": "AWS::EC2::VPC",
+            "Properties": {
+                "EnableDnsSupport": "true",
+                "EnableDnsHostnames": "true",
+                "CidrBlock": {"Ref":"VPCCIDR"},
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : {"Fn::Join": ["-", [
+                            {"Ref": "ProjectName"},
+                            {"Ref": "EnvironmentName"},
+                            {"Ref": "SystemNumber"},
+                            "VPC"
+                        ]]}
+                    },
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "SubnetOne": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "MapPublicIpOnLaunch" : true,
+                "CidrBlock": {"Ref":"SubnetOneCIDR"},
+                "VpcId": {"Ref": "VPC"},
+                "AvailabilityZone" : {"Fn::Select" : ["0", { "Fn::GetAZs" : "" }]},
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : {"Fn::Join": ["-", [
+                            {"Ref": "ProjectName"},
+                            {"Ref": "EnvironmentName"},
+                            {"Ref": "SystemNumber"},
+                            "SubnetOne"
+                        ]]}
+                    },
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            } 
+        },
+        "SubnetTwo": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "MapPublicIpOnLaunch" : true,
+                "CidrBlock": {"Ref":"SubnetTwoCIDR"},
+                "VpcId": {"Ref": "VPC"},
+                "AvailabilityZone" : {"Fn::Select" : ["1", { "Fn::GetAZs" : "" }]},
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : {"Fn::Join": ["-", [
+                            {"Ref": "ProjectName"},
+                            {"Ref": "EnvironmentName"},
+                            {"Ref": "SystemNumber"},
+                            "SubnetTwo"
+                        ]]}
+                    },
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            } 
+        },
+        "SubnetThree": {
+            "Type": "AWS::EC2::Subnet",
+            "Properties": {
+                "MapPublicIpOnLaunch" : true,
+                "CidrBlock": {"Ref":"SubnetThreeCIDR"},
+                "VpcId": {"Ref": "VPC"},
+                "AvailabilityZone" : {"Fn::Select" : ["2", { "Fn::GetAZs" : "" }]},
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : {"Fn::Join": ["-", [
+                            {"Ref": "ProjectName"},
+                            {"Ref": "EnvironmentName"},
+                            {"Ref": "SystemNumber"},
+                            "SubnetThree"
+                        ]]}
+                    },
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            } 
+        },
+        "InternetGateway": {
+            "Type": "AWS::EC2::InternetGateway",
+            "Properties" : {
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : {"Fn::Join": ["-", [
+                            {"Ref": "ProjectName"},
+                            {"Ref": "EnvironmentName"},
+                            {"Ref": "SystemNumber"},
+                            "IGW"
+                        ]]}
+                    },
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "PublicVPCGatewayAttachment": {
+            "Type": "AWS::EC2::VPCGatewayAttachment",
+            "Properties": {
+                "VpcId": {"Ref": "VPC"},
+                "InternetGatewayId": {"Ref": "InternetGateway"}
+            }
+        },
+        "PublicRouteTable": {
+            "Type": "AWS::EC2::RouteTable",
+            "Properties": {
+                "VpcId": {"Ref": "VPC"},
+                "Tags" : [
+                    {
+                        "Key" : "Name",
+                        "Value" : {"Fn::Join": ["-", [
+                            {"Ref": "ProjectName"},
+                            {"Ref": "EnvironmentName"},
+                            {"Ref": "SystemNumber"},
+                            "RouteTable"
+                        ]]}
+                    },
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "PublicRoute": {
+            "Type": "AWS::EC2::Route",
+            "DependsOn": "PublicVPCGatewayAttachment",
+            "Properties": {
+                "RouteTableId": {"Ref": "PublicRouteTable"},
+                "DestinationCidrBlock": "0.0.0.0/0",
+                "GatewayId": {"Ref": "InternetGateway"}
+            }
+        },
+        "SubnetOneRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "SubnetOne"},
+                "RouteTableId": {"Ref": "PublicRouteTable"}
+            }
+        },
+        "SubnetTwoRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "SubnetTwo"},
+                "RouteTableId": {"Ref": "PublicRouteTable"}
+            }
+        },
+        "SubnetThreeRouteTableAssociation": {
+            "Type": "AWS::EC2::SubnetRouteTableAssociation",
+            "Properties": {
+                "SubnetId": {"Ref": "SubnetThree"},
+                "RouteTableId": {"Ref": "PublicRouteTable"}
+            }
+        },
+        "ECSCluster":{
+            "Type":"AWS::ECS::Cluster",
+            "Properties" : {
+                "ClusterName" :{"Fn::Join": ["-", [
+                    {"Ref": "ProjectName"},
+                    {"Ref": "EnvironmentName"},
+                    {"Ref": "SystemNumber"},
+                    "ECS-cluster"
+                ]]},
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "EcsSecurityGroup":{
+            "Type":"AWS::EC2::SecurityGroup",
+            "Properties":{
+                "GroupDescription":"ECS Security Group",
+                "GroupName" : {"Fn::Join": ["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ECS-SG"
+                ]]},
+                "VpcId": {"Ref": "VPC"},
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "EcsSecurityGroupHTTPinbound":{
+            "Type":"AWS::EC2::SecurityGroupIngress",
+            "Properties":{
+                "GroupId":{"Ref":"EcsSecurityGroup"},
+                "IpProtocol":"tcp",
+                "FromPort":"80",
+                "ToPort":"80",
+                "CidrIp":"0.0.0.0/0"
+            }
+        },
+        "EcsSecurityGroupHTTPSinbound":{
+            "Type":"AWS::EC2::SecurityGroupIngress",
+            "Properties":{
+                "GroupId":{"Ref":"EcsSecurityGroup"},
+                "IpProtocol":"tcp",
+                "FromPort":"443",
+                "ToPort":"443",
+                "CidrIp":"0.0.0.0/0"
+            }
+        },
+        "EcsSecurityGroupSSHinbound":{
+            "Type":"AWS::EC2::SecurityGroupIngress",
+            "Properties":{
+                "GroupId":{"Ref":"EcsSecurityGroup"},
+                "IpProtocol":"tcp",
+                "FromPort":"22",
+                "ToPort":"22",
+                "CidrIp":"0.0.0.0/0"
+            }
+        },
+        "EcsSecurityGroupALBports":{
+            "Type":"AWS::EC2::SecurityGroupIngress",
+            "Properties":{
+                "GroupId":{"Ref":"EcsSecurityGroup"},
+                "IpProtocol":"tcp",
+                "FromPort":"31000",
+                "ToPort":"61000",
+                "SourceSecurityGroupId":{"Ref":"EcsSecurityGroup"}
+            }
+        },
+        "CloudwatchLogsGroup":{
+            "Type":"AWS::Logs::LogGroup",
+            "Properties":{
+                "LogGroupName": {"Fn::Join" : ["-", [ 
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ECS-LogGroup"
+                ]]},
+                "RetentionInDays":14
+            }
+        },
+        "ECSTaskIAMRole":{
+            "Type":"AWS::IAM::Role",
+            "Properties":{
+                "RoleName" : { "Fn::Join" : [ "-", [
+                    { "Ref":"ProjectName"},
+                    { "Ref":"EnvironmentName"},
+                    { "Ref":"SystemNumber"},
+                    "ECSTaskIAMRole"
+                ]]},
+                "AssumeRolePolicyDocument":{
+                    "Statement":[{
+                        "Effect":"Allow",
+                        "Principal":{"Service":["ecs-tasks.amazonaws.com"]},
+                        "Action":["sts:AssumeRole"]
+                    }]
+                },
+                "Path":"/",
+                "Policies":[{
+                    "PolicyName":"ecs-task-service",
+                    "PolicyDocument":{
+                        "Statement":[{
+                            "Effect":"Allow",
+                            "Action": [
+                                "kms:Decrypt",
+                                "secretsmanager:GetSecretValue",
+                                "logs:*"
+                            ],
+                            "Resource":"*"
+                        }],
+                        "Version":"2012-10-17"
+                    }
+                }],
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber", "Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "AppSessionSecret": {
+            "Type": "AWS::SecretsManager::Secret",
+            "Properties": {
+                "Name" : {"Fn::Join" : [ "-", [
+                    {"Ref" : "ProjectName" }, 
+                    {"Ref" : "EnvironmentName" }, 
+                    {"Ref" : "SystemNumber" }, 
+                    "App-Session-Secret" 
+                ]]},
+                "Description": {"Fn::Join" : [" ", [
+                    "Application session secret for project",
+                    {"Ref" : "ProjectName" }, 
+                    "-",
+                    {"Ref" : "EnvironmentName" },
+                    "-",
+                    {"Ref" : "SystemNumber" }
+                ]]},
+                "GenerateSecretString": {},
+                "Tags": [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber", "Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "AppSessionSecretResourcePolicy": {
+            "Type": "AWS::SecretsManager::ResourcePolicy",
+            "Properties": {
+                "SecretId": {"Ref": "AppSessionSecret"},
+                "ResourcePolicy": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Resource": "*",
+                            "Action": "secretsmanager:*",
+                            "Effect": "Allow",
+                            "Principal": {
+                                "AWS": { "Fn::GetAtt" : [ "ECSTaskIAMRole", "Arn" ] }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        "ECSTaskDefinition":{
+            "Type":"AWS::ECS::TaskDefinition",
+            "Properties":{
+                "Family":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "web-app"
+                ]]},
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ],
+                "ExecutionRoleArn": { "Fn::GetAtt" : [ "ECSTaskIAMRole", "Arn" ] },
+                "ContainerDefinitions":[
+                    {
+                        "Name":{"Fn::Join" : [ "-", [
+                            {"Ref" : "ProjectName" }, 
+                            {"Ref" : "EnvironmentName" }, 
+                            {"Ref" : "SystemNumber" }, 
+                            "web-app-container" 
+                        ]]},
+                        "Cpu":{"Ref": "WebAppCPU"},
+                        "Essential":true,
+                        "Image":{"Ref" : "WebAppImage"},
+                        "Memory":{"Ref": "WebAppMemory"},
+                        "LogConfiguration": {
+                            "LogDriver":"awslogs",
+                            "Options": { 
+                                "awslogs-group" : {"Ref":"CloudwatchLogsGroup"},
+                                "awslogs-region" : {"Ref":"AWS::Region"},
+                                "awslogs-stream-prefix" : "ecs-app"
+                            }
+                        },
+                        "MountPoints":[
+                            {
+                                "ContainerPath":{"Ref":"WebAppContainerPath"},
+                                "SourceVolume":"web-app-volume"
+                            }
+                        ],
+                        "PortMappings":[{"ContainerPort":{"Ref" : "WebAppPort"}}],
+                        "Command":[{"Ref" : "WebAppCommand"}],
+                        "EntryPoint":[],
+                        "Environment": [
+                            {
+                                "Name": "PROJECT_NAME",
+                                "Value": {"Ref" : "ProjectName"}
+                            },
+                            {
+                                "Name": "ENVIRONMENT_NAME",
+                                "Value": {"Ref" : "EnvironmentName"}
+                            },
+                            {
+                                "Name": "SYSTEM_NUMBER",
+                                "Value": {"Ref" : "SystemNumber"}
+                            },
+                            {
+                                "Name": "WEB_APP_PORT",
+                                "Value": {"Ref" : "WebAppPort"}
+                            },
+                            {
+                                "Name": "LOADBALANCER_PORT",
+                                "Value": {"Ref" : "LoadBalancerPort"}
+                            },
+                            {
+                                "Name": "WEB_APP_HTTP_URL",
+                                "Value": { "Fn::Join":["",[
+                                    { "Fn::If" : [
+                                        "LoadBalancerProtocol",
+                                        "http://",
+                                        "https://"
+                                    ]},
+                                    { "Fn::If" : [
+                                        "IsEmptyDomain",
+                                        {"Fn::GetAtt":["ECSALB","DNSName"]},
+                                        { "Fn::Join":[".", [
+                                            {"Ref": "AppSubDomain"}, 
+                                            {"Ref": "Domain"}
+                                        ]]}
+                                    ]}
+                                ]]}
+                            },
+                            {
+                                "Name": "LOAD_BALANCER_DNS",
+                                "Value": {"Fn::GetAtt":["ECSALB","DNSName"]}
+                            }
+                        ],
+                        "Secrets": []
+                    }
+                ],
+                "Volumes":[
+                    {
+                        "Name" : "web-app-volume",
+                        "Host" : {"SourcePath" : {"Ref" : "WebAppVolumePath"}}
+                    }
+                ]
+            }
+        },
+        "ACMCertificate":{
+            "Type":"AWS::CertificateManager::Certificate", 
+            "Condition" : "CreateCertificate",
+            "Properties":{
+                "DomainName":{ "Fn::Join":[".", [
+                    {"Ref": "AppSubDomain"}, 
+                    {"Ref": "Domain"}
+                ]]}, 
+                "ValidationMethod":"DNS",
+                "DomainValidationOptions" : [
+                    {
+                        "DomainName" : { "Fn::Join":[".", [
+                            {"Ref": "AppSubDomain"}, 
+                            {"Ref": "Domain"}
+                        ]]},
+                        "HostedZoneId" : {"Ref" : "HostedZoneId"}
+                    }
+                ],
+                "CertificateTransparencyLoggingPreference": "DISABLED",
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "ECSALB":{
+            "Type":"AWS::ElasticLoadBalancingV2::LoadBalancer",
+            "DependsOn" : "PublicVPCGatewayAttachment",
+            "Properties":{
+                "Name":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ECS-ALB"
+                ]]},
+                "Scheme":"internet-facing",
+                "LoadBalancerAttributes":[
+                    {
+                        "Key":"idle_timeout.timeout_seconds",
+                        "Value":"30"
+                    }
+                ],
+                "Subnets":[
+                    {"Ref":"SubnetOne"},
+                    {"Ref":"SubnetTwo"},
+                    {"Ref":"SubnetThree"}
+                ],
+                "SecurityGroups":[{"Ref":"EcsSecurityGroup"}],
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "ALBListener":{
+            "Type":"AWS::ElasticLoadBalancingV2::Listener",
+            "DependsOn":"ECSServiceRole",
+            "Properties":{
+                "DefaultActions":[
+                    {
+                        "Type":"forward",
+                        "TargetGroupArn":{"Ref":"ECSTG"}
+                    }
+                ],
+                "LoadBalancerArn":{"Ref":"ECSALB"},
+                "Port":{"Ref" : "LoadBalancerPort"},
+                "Protocol": { "Fn::If" : [
+                    "LoadBalancerProtocol",
+                    "HTTP",
+                    "HTTPS"
+                ]},
+                "Certificates" : {"Fn::If" : ["CreateCertificate",
+                    [{"CertificateArn" : {"Ref" : "ACMCertificate"}}],
+                    {"Ref" : "AWS::NoValue"}
+                ]}
+            }
+        },
+        "ECSALBListenerRule":{
+            "Type":"AWS::ElasticLoadBalancingV2::ListenerRule",
+            "DependsOn":"ALBListener",
+            "Properties":{
+                "Actions":[
+                    {
+                        "Type":"forward",
+                        "TargetGroupArn":{"Ref":"ECSTG"}
+                    }
+                ],
+                "Conditions":[
+                    {
+                        "Field":"path-pattern",
+                        "Values":["/"]
+                    }
+                ],
+                "ListenerArn":{"Ref":"ALBListener"},
+                "Priority":1
+            }
+        },
+        "ECSTG":{
+            "Type":"AWS::ElasticLoadBalancingV2::TargetGroup",
+            "DependsOn":"ECSALB",
+            "Properties":{
+                "Name":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ECS-TG"
+                ]]},
+                "HealthCheckIntervalSeconds":10,
+                "HealthCheckPath":{"Ref" : "LoadBalancerHealthcheckPath"},
+                "HealthCheckProtocol":{ "Fn::If" : [
+                    "LoadBalancerProtocol",
+                    "HTTP",
+                    "HTTPS"
+                ]},
+                "HealthCheckTimeoutSeconds":5,
+                "HealthyThresholdCount":2,
+                "Port":{"Ref":"LoadBalancerPort"},
+                "Protocol":{ "Fn::If" : [
+                    "LoadBalancerProtocol",
+                    "HTTP",
+                    "HTTPS"
+                ]},
+                "UnhealthyThresholdCount":2,
+                "VpcId":{"Ref":"VPC"},
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "ECSAutoScalingGroup":{
+            "Type":"AWS::AutoScaling::AutoScalingGroup",
+            "Properties":{
+                "AutoScalingGroupName":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ECS-ASG"
+                ]]},
+                "VPCZoneIdentifier":[
+                    {"Ref":"SubnetOne"},
+                    {"Ref":"SubnetTwo"},
+                    {"Ref":"SubnetThree"}
+                ],
+                "LaunchConfigurationName":{"Ref":"ContainerInstances"},
+                "MinSize":"1",
+                "MaxSize":{"Ref":"MaxSize"},
+                "DesiredCapacity":{"Ref":"DesiredCapacity"},
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}, "PropagateAtLaunch" : true},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}, "PropagateAtLaunch" : true},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}, "PropagateAtLaunch" : true},
+                    {"Key" : "Name","Value" : { "Fn::Join":["-", [
+                            {"Ref": "ProjectName"}, 
+                            {"Ref": "EnvironmentName"}, 
+                            {"Ref": "SystemNumber"}
+                        ]]}, 
+                        "PropagateAtLaunch" : true
+                    }
+                ]
+            },
+            "CreationPolicy":{"ResourceSignal":{"Timeout":"PT15M"}},
+            "UpdatePolicy":{"AutoScalingReplacingUpdate":{"WillReplace":"true"}}
+        },
+        "ContainerInstances":{
+            "Type":"AWS::AutoScaling::LaunchConfiguration",
+                "Properties":{
+                "LaunchConfigurationName":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ECS-LC"
+                ]]},
+                "ImageId":{"Fn::FindInMap":["AWSRegionToAMI",{"Ref":"AWS::Region"},"AMIID"]},
+                "SecurityGroups":[{"Ref":"EcsSecurityGroup"}],
+                "InstanceType":{"Ref":"InstanceType"},
+                "IamInstanceProfile":{"Ref":"EC2InstanceProfile"},
+                "KeyName":{"Ref":"KeyName"},
+                "UserData":{
+                    "Fn::Base64":{
+                        "Fn::Join":["",
+                            [
+                                "#!/bin/bash -xe\n",
+                                { "Fn::Sub": [ 
+                                    "export ENVIRONMENT_NAME=${ENVIRONMENT}\n", {
+                                        "ENVIRONMENT": {"Ref" : "EnvironmentName" }
+                                    }
+                                ]},
+                                { "Fn::Sub": [ 
+                                    "export PROJECT_NAME=${PROJECT}\n", {
+                                        "PROJECT": {"Ref" : "ProjectName" }
+                                    }
+                                ]},
+                                { "Fn::Sub": [ 
+                                    "export SYSTEM_NUMBER=${SYSTEM}\n", {
+                                        "SYSTEM": {"Ref" : "SystemNumber" }
+                                    }
+                                ]},
+                                { "Fn::Sub": [ 
+                                    "echo ECS_CLUSTER=${CLUSTER} >> ${CONFIG} \n", {
+                                        "CLUSTER": {"Ref" : "ECSCluster" },
+                                        "CONFIG" : "/etc/ecs/ecs.config"
+                                    }
+                                ]},
+                                "yum install -y aws-cfn-bootstrap aws-cli\n",
+                                { "Fn::Sub": [ 
+                                    "mkdir -p ${DIR} \n", {
+                                        "DIR": {"Ref" : "WebAppVolumePath" }
+                                    }
+                                ]},
+                                { "Fn::Sub": [ 
+                                    "aws s3 sync s3://${BUCKET}/${S3_PATH} ${LOCAL_DIR} \n", {
+                                        "LOCAL_DIR": {"Ref" : "WebAppVolumePath" },
+                                        "BUCKET" : {"Ref" : "StagingBucket"},
+                                        "S3_PATH" : {"Ref" : "AppStagingPath"}
+                                    }
+                                ]},
+                                { "Fn::Sub": [ 
+                                    "chmod +x  ${CMD} \n", {
+                                        "CMD": {"Ref" : "WebAppCommand"}
+                                    }
+                                ]},
+                                { "Fn::Sub": [ 
+                                    "${CMD} --stack ${STACK} --resource ${RESOURCE} --region ${REGION} \n", {
+                                        "CMD" : "/opt/aws/bin/cfn-signal -e $?",
+                                        "STACK" : {"Ref":"AWS::StackName"},
+                                        "RESOURCE" : "ECSAutoScalingGroup",
+                                        "REGION" : {"Ref":"AWS::Region"}
+                                    }
+                                ]}
+                            ]
+                        ]
+                    }
+                }
+            }
+        },
+        "ECSService":{
+            "Type":"AWS::ECS::Service",
+            "DependsOn":"ALBListener",
+            "Properties":{
+                "Cluster":{"Ref":"ECSCluster"},
+                "DesiredCount":"1",
+                "HealthCheckGracePeriodSeconds": 600,
+                "LoadBalancers":[
+                    {
+                        "ContainerName":{"Fn::Join" : [ "-", [
+                            {"Ref" : "ProjectName" }, 
+                            {"Ref" : "EnvironmentName" }, 
+                            {"Ref" : "SystemNumber" }, 
+                            "web-app-container" 
+                        ]]},
+                        "ContainerPort":{"Ref":"WebAppPort"},
+                        "TargetGroupArn":{"Ref":"ECSTG"}
+                    }
+                ],
+                "Role":{"Ref":"ECSServiceRole"},
+                "TaskDefinition":{"Ref":"ECSTaskDefinition"},
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "ECSServiceRole":{
+            "Type":"AWS::IAM::Role",
+            "Properties":{
+                "RoleName":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ECSRole"
+                ]]},
+                "AssumeRolePolicyDocument":{
+                    "Statement":[{
+                        "Effect":"Allow",
+                        "Principal":{"Service":["ecs.amazonaws.com"]},
+                        "Action":["sts:AssumeRole"]
+                    }]
+                },
+                "Path": "/",
+                "Policies":[{
+                    "PolicyName":"ecs-service",
+                    "PolicyDocument":{
+                        "Statement":[{
+                            "Effect":"Allow",
+                            "Action":[
+                                "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                                "elasticloadbalancing:DeregisterTargets",
+                                "elasticloadbalancing:Describe*",
+                                "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                                "elasticloadbalancing:RegisterTargets",
+                                "ec2:Describe*",
+                                "ec2:AuthorizeSecurityGroupIngress"
+                            ],
+                            "Resource":"*"
+                        }]
+                    }
+                }],
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "ServiceScalingTarget":{
+            "Type":"AWS::ApplicationAutoScaling::ScalableTarget",
+            "DependsOn":"ECSService",
+            "Properties":{
+                "MaxCapacity":2,
+                "MinCapacity":1,
+                "ResourceId":{ "Fn::Join":["",[
+                    "service/",{"Ref":"ECSCluster"},
+                    "/",{"Fn::GetAtt":["ECSService","Name"]}
+                ]]},
+                "RoleARN":{"Fn::GetAtt":["AutoscalingRole","Arn"]},
+                "ScalableDimension":"ecs:service:DesiredCount",
+                "ServiceNamespace":"ecs"
+            }
+        },
+        "ServiceScalingPolicy":{
+            "Type":"AWS::ApplicationAutoScaling::ScalingPolicy",
+            "Properties":{
+                "PolicyName":"AStepPolicy",
+                "PolicyType":"StepScaling",
+                "ScalingTargetId":{"Ref":"ServiceScalingTarget"},
+                "StepScalingPolicyConfiguration":{
+                    "AdjustmentType":"PercentChangeInCapacity",
+                    "Cooldown":60,
+                    "MetricAggregationType":"Average",
+                    "StepAdjustments":[
+                        {
+                            "MetricIntervalLowerBound":0,
+                            "ScalingAdjustment":200
+                        }
+                    ]
+                }
+            }
+        },
+        "ALB500sAlarmScaleUp":{
+            "Type":"AWS::CloudWatch::Alarm",
+            "Properties":{
+                "EvaluationPeriods":"1",
+                "Statistic":"Average",
+                "Threshold":"10",
+                "AlarmDescription":"Alarm if our ALB generates too many HTTP 500s.",
+                "Period":"60",
+                "AlarmActions":[{"Ref":"ServiceScalingPolicy"}],
+                "Namespace":"AWS/ApplicationELB",
+                "Dimensions":[{
+                    "Name":"LoadBalancer",
+                    "Value":{"Fn::GetAtt" : [ "ECSALB", "LoadBalancerFullName"] }
+                }],
+                "ComparisonOperator":"GreaterThanThreshold",
+                "MetricName":"HTTPCode_ELB_5XX_Count"
+            }
+        },
+        "EC2Role":{
+            "Type":"AWS::IAM::Role",
+            "Properties":{
+                "RoleName":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "EC2Role"
+                ]]},
+                "AssumeRolePolicyDocument":{
+                    "Statement":[{
+                        "Effect":"Allow",
+                        "Principal":{"Service":["ec2.amazonaws.com"]},
+                        "Action":["sts:AssumeRole"]
+                    }]
+                },
+                "Path":"/",
+                "Policies":[{
+                    "PolicyName":"ecs-service",
+                    "PolicyDocument":{
+                        "Statement":[{
+                            "Effect":"Allow",
+                            "Action":[
+                                "ecs:CreateCluster",
+                                "ecs:DeregisterContainerInstance",
+                                "ecs:DiscoverPollEndpoint",
+                                "ecs:Poll",
+                                "ecs:RegisterContainerInstance",
+                                "ecs:StartTelemetrySession",
+                                "ecs:Submit*",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents",
+                                "s3:*"
+                            ],
+                            "Resource":"*"
+                        }]
+                    }
+                }],
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "AutoscalingRole":{
+            "Type":"AWS::IAM::Role",
+            "Properties":{
+                "RoleName":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ASGRole"
+                ]]},
+                "AssumeRolePolicyDocument":{
+                    "Statement":[{
+                        "Effect":"Allow",
+                        "Principal":{"Service":["application-autoscaling.amazonaws.com"]},
+                        "Action":["sts:AssumeRole"]
+                    }]
+                },
+                "Path": "/",
+                "Policies":[{
+                    "PolicyName":"service-autoscaling",
+                    "PolicyDocument":{
+                        "Statement":[{
+                            "Effect":"Allow",
+                            "Action":[
+                                "application-autoscaling:*",
+                                "cloudwatch:DescribeAlarms",
+                                "cloudwatch:PutMetricAlarm",
+                                "ecs:DescribeServices",
+                                "ecs:UpdateService"
+                            ],
+                            "Resource":"*"
+                        }]
+                    }
+                }],
+                "Tags" : [
+                    {"Key" : "ProjectName","Value" : {"Ref": "ProjectName"}},
+                    {"Key" : "EnvironmentName","Value" : {"Ref": "EnvironmentName"}},
+                    {"Key" : "SystemNumber","Value" : {"Ref": "SystemNumber"}}
+                ]
+            }
+        },
+        "EC2InstanceProfile":{
+            "Type":"AWS::IAM::InstanceProfile",
+            "Properties":{
+                "Path": "/",
+                "Roles":[{"Ref":"EC2Role"}],
+                "InstanceProfileName":{ "Fn::Join":["-", [
+                    {"Ref": "ProjectName"}, 
+                    {"Ref": "EnvironmentName"}, 
+                    {"Ref": "SystemNumber"}, 
+                    "ECS-InstanceProfile"
+                ]]}
+            }
+        },
+        "RecordSet": {
+            "Type" : "AWS::Route53::RecordSet",
+            "Condition" : "DeploySubdomain",
+            "Properties" : {
+                "Type" : "CNAME",
+                "Comment" : { "Fn::Join":["-", [
+                    "CNAME record for ",
+                    {"Ref": "ProjectName"},
+                    {"Ref": "EnvironmentName"},
+                    {"Ref": "SystemNumber"}
+                ]]},
+                "HostedZoneId" : {"Ref" : "HostedZoneId"},
+                "Name" : { "Fn::Join":[".", [
+                    {"Ref": "AppSubDomain"}, 
+                    {"Ref": "Domain"}
+                ]]},
+                "ResourceRecords":[{"Fn::GetAtt":["ECSALB","DNSName"]}],
+                "TTL" : 600,
+            }
+        }
+    },
+    "Outputs":{
+        "EnvironmentName": {
+            "Description": "Environment name",
+            "Value": {"Ref": "EnvironmentName"}
+        },
+        "ProjectName": {
+            "Description": "Project name",
+            "Value": {"Ref": "ProjectName"}
+        },
+        "SystemNumber": {
+            "Description": "System number",
+            "Value": {"Ref": "SystemNumber"}
+        },
+        "LogoURL": {
+            "Description": "Logo URL",
+            "Value": {"Ref": "LogoURL"}
+        },
+        "VPCCIDR" : {
+            "Value" : { "Fn::GetAtt" : [ "VPC", "CidrBlock" ] },
+            "Description" : "VPC CIDR Range"
+        },
+        "SubnetOneID": {
+            "Description": "Public Subnet ID",
+            "Value": {"Ref": "SubnetOne"}
+        },
+        "SubnetOneAZ" : {
+            "Value" : { "Fn::GetAtt" : [ "SubnetOne", "AvailabilityZone" ] },
+            "Description" : "Public subnet availability zone"
+        },
+        "SubnetOneCIDR": {
+            "Description": "Public Subnet CIDR range",
+            "Value": {"Ref": "SubnetOneCIDR"}
+        },
+        "SubnetTwoID": {
+            "Description": "Private Subnet ID",
+            "Value": {"Ref": "SubnetTwo"}
+        },
+        "SubnetTwoAZ" : {
+            "Value" : { "Fn::GetAtt" : [ "SubnetTwo", "AvailabilityZone" ] },
+            "Description" : "Private subnet availability zone"
+        },
+        "SubnetTwoCIDR": {
+            "Description": "Private Subnet CIDR range",
+            "Value": {"Ref": "SubnetTwoCIDR"}
+        },
+        "SubnetThreeID": {
+            "Description": "Private Subnet ID",
+            "Value": {"Ref": "SubnetThree"}
+        },
+        "SubnetThreeAZ" : {
+            "Value" : { "Fn::GetAtt" : [ "SubnetThree", "AvailabilityZone" ] },
+            "Description" : "Private subnet availability zone"
+        },
+        "SubnetThreeCIDR": {
+            "Description": "Private Subnet CIDR range",
+            "Value": {"Ref": "SubnetThreeCIDR"}
+        },
+        "SecurityGroupID" : {
+            "Value" : { "Fn::GetAtt" : [ "EcsSecurityGroup", "GroupId" ] },
+            "Description" : "Security Group ID"
+        },
+        "ECSLogGroupName": {
+            "Description": "Name of the Cloudwatch Log Group",
+            "Value": {"Ref": "CloudwatchLogsGroup"}
+        },
+        "ECSTaskDefinitionARN": {
+            "Description": "The ARN of the ECS Task Definition",
+            "Value": {"Ref": "ECSTaskDefinition"}
+        },
+        "ECSServiceARN":{
+            "Value":{"Ref":"ECSService"}
+        },
+        "ECSClusterName":{
+            "Value":{"Ref":"ECSCluster"}
+        },
+        "ECSALBDNSName":{
+            "Description":"Your ALB DNS URL",
+            "Value":{"Fn::GetAtt":["ECSALB","DNSName"]}
+        }
+    }
+}

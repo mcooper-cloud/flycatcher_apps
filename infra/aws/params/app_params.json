@@ -1,0 +1,94 @@
+[
+    {
+        "ParameterKey" : "EnvironmentName",
+        "ParameterValue" : "{{ EnvironmentName }}"
+    },
+    {
+        "ParameterKey" : "ProjectName",
+        "ParameterValue" : "{{ ProjectName }}"
+    },
+    {
+        "ParameterKey" : "SystemNumber",
+        "ParameterValue" : "{{ SystemNumber }}"
+    },
+    {
+        "ParameterKey" : "LogoURL",
+        "ParameterValue" : "{{ LogoURL }}"
+    },
+    {
+        "ParameterKey" : "VPCCIDR",
+        "ParameterValue" : "{{ VPCCIDR }}"
+    },
+    {
+        "ParameterKey" : "SubnetOneCIDR",
+        "ParameterValue" : "{{ SubnetOneCIDR }}"
+    },
+    {
+        "ParameterKey" : "SubnetTwoCIDR",
+        "ParameterValue" : "{{ SubnetTwoCIDR }}"
+    },
+    {
+        "ParameterKey" : "SubnetThreeCIDR",
+        "ParameterValue" : "{{ SubnetThreeCIDR }}"
+    },
+    {
+        "ParameterKey" : "KeyName",
+        "ParameterValue" : "{{ SSHKeyName }}"
+    },
+    {
+        "ParameterKey" : "DesiredCapacity",
+        "ParameterValue" : "{{ DesiredCapacity }}"
+    },
+    {
+        "ParameterKey" : "MaxSize",
+        "ParameterValue" : "{{ MaxSize }}"
+    },
+    {
+        "ParameterKey" : "LoadBalancerPort",
+        "ParameterValue" : "{{ LoadBalancerPort }}"
+    },
+    {
+        "ParameterKey" : "Domain",
+        "ParameterValue" : "{{ Domain }}"
+    },
+    {
+        "ParameterKey" : "HostedZoneId",
+        "ParameterValue" : "{{ HostedZoneId }}"
+    },
+    {
+        "ParameterKey" : "AppSubDomain",
+        "ParameterValue" : "{{ AppSubDomain }}"
+    },
+    {
+        "ParameterKey" : "InstanceType",
+        "ParameterValue" : "{{ InstanceType }}"
+    },
+    {
+        "ParameterKey" : "WebAppVolumePath",
+        "ParameterValue" : "{{ WebAppVolumePath }}"
+    },
+    {
+        "ParameterKey" : "WebAppContainerPath",
+        "ParameterValue" : "{{ WebAppContainerPath }}"
+    },
+    {
+        "ParameterKey" : "WebAppCommand",
+        "ParameterValue" : "{{ WebAppStartCommand }}" 
+    },
+    {
+        "ParameterKey" : "WebAppImage",
+        "ParameterValue" : "{{ WebAppImage }}"
+    },
+    {
+        "ParameterKey" : "StagingBucket",
+        "ParameterValue" : "{{ StagingBucket }}"
+    },
+    {
+        "ParameterKey" : "AppStagingPath",
+        "ParameterValue" : "{{ AppStagingPath }}"
+    },
+    {
+        "ParameterKey" : "WebAppPort",
+        "ParameterValue" : "{{ WebAppPort }}"
+    }
+]
