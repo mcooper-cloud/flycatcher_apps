@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block main_content %}
+    <div class="container-fluid wrapper">
+        {% if form is defined %}
+        <div class="login-box">
+            <form method="POST" action="{{ url_for('home') }}">
+                {{ form.csrf_token }}
+                <table class="table-responsive">
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="label">
+                                <label>{{ form.organization_id.label }}</label>
+                            </th>
+                            <td class="field">
+                                {{ form.organization_id(class_="form-control") }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="label">
+                                <label>{{ form.invitation_id.label }}</label>
+                            </th>
+                            <td class="field">
+                                {{ form.invitation_id(class_="form-control") }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="label">
+                                <label>{{ form.connection_id.label }}</label>
+                            </th>
+                            <td class="field">
+                                {{ form.connection_id(class_="form-control") }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="label">
+                                <label>{{ form.audience.label }}</label>
+                            </th>
+                            <td class="field">
+                                {{ form.audience(class_="form-control") }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="label">
+                                <label>{{ form.scope.label }}</label>
+                            </th>
+                            <td class="field">
+                                {{ form.scope(class_="form-control") }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="label">
+                                <label>{{ form.redirect_uri.label }}</label>
+                            </th>
+                            <td class="field">
+                                {{ form.redirect_uri(class_="form-control") }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row" class="label">
+                                <label>{{ form.screen_hint.label }}</label>
+                            </th>
+                            <td class="field">
+                                {{ form.screen_hint(class_="form-control") }}
+                            </td>
+                        </tr>
+                        <tr><td colspan="2">
+                            <input type="submit" />
+                        </td></tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+        {% elif error_data is defined %}
+            <div class="col-sm-4">
+                {{ error_data }}
+            </div>
+        {% elif auth_data is defined %}
+            <div class="container-fluid wrapper">
+                <div class="presi-box">
+
+                    {% if 'auth0_login_url' in auth_data %}
+                        <div class="label">The following Auth0 URL will be used:</div>
+                        <div class="url">{{ auth_data.auth0_login_url }}</div>
+                    {% endif %}
+
+                    {% if 'app_login_url' in auth_data %}
+                        <div class="continue">
+                            <a class="btn btn-primary continue" href="{{ auth_data.app_login_url }}">Continue</a>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
