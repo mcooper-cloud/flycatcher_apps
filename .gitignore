@@ -1,0 +1,5 @@
+.secrets/*
+logs/*
+.logs/*
+.gk/*
+.DS_Store
