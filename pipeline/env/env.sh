@@ -31,6 +31,12 @@ function export_env(){
     export AUTH0_TENANT_YAML={{ Auth0TenantYAML }}
 
     ##
+    ## An API definition will be created in Auth0
+    ## using this identifier
+    ##
+    export AUTH0_API_AUDIENCE={{ Auth0Audience }}
+
+    ##
     ## application paths
     ##
     export WEB_APP_PATH="{{ WebAppBuildPath }}"

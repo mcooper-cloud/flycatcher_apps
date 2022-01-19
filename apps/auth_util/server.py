@@ -224,7 +224,6 @@ def home():
             #** Organization
             #**
             if form.organization_id.data:
-                #data['organization'] = form.organization_id.data
                 parameter_list.append('organization={}'.format(form.organization_id.data))
 
 
@@ -232,52 +231,43 @@ def home():
             #** Invitation
             #**
             if form.invitation_id.data:
-                #data['invitation'] = form.invitation.data
                 parameter_list.append('invitation={}'.format(form.invitation_id.data))
 
             #**
             #** Connection
             #**
             if form.connection_id.data:
-                #data['connection'] = form.connection_id.data
                 parameter_list.append('connection={}'.format(form.connection_id.data))
 
             #**
             #** Screen Hint
             #**
             if form.screen_hint.data:
-                #data['screen_hint'] = form.screen_hint.data
                 parameter_list.append('screen_hint={}'.format(form.screen_hint.data))
 
             #**
             #** Audience
             #**
             if form.audience.data:
-                #data['audience'] = form.audience.data
                 parameter_list.append('audience={}'.format(form.audience.data))
 
             else:
-                #data['audience'] = AUTH0_AUDIENCE
                 parameter_list.append('audience={}'.format(AUTH0_AUDIENCE))
 
             #**
             #** Scope
             #**
             if form.scope.data:
-                #data['scope'] = form.scope.data
                 parameter_list.append('scope={}'.format(form.scope.data))
             else:
-                #data['scope'] = 'openid+profile+email'
                 parameter_list.append('scope={}'.format('openid+profile+email'))
 
             #**
             #** Redirect URI
             #**
             if form.redirect_uri.data:
-                #data['redirect_uri'] = form.redirect_uri.data
                 parameter_list.append('redirect_uri={}'.format(form.redirect_uri.data))
             else:
-                #data['redirect_uri'] = AUTH0_CALLBACK_URL
                 parameter_list.append('redirect_uri={}'.format(AUTH0_CALLBACK_URL))
 
 
