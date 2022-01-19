@@ -79,40 +79,44 @@ class Auth0(object):
 
     def get_token(self):
 
-        token_data = {
-            'client_id' : self.client_id,
-            'client_secret' : self.client_secret,
-            'audience' : self.audience,
-            'grant_type' : self.grant_type
-        }
+        try:
+            token_data = {
+                'client_id' : self.client_id,
+                'client_secret' : self.client_secret,
+                'audience' : self.audience,
+                'grant_type' : self.grant_type
+            }
 
-        logging.debug('[+] Getting access token from : {}'.format(self.token_endpoint))
+            logging.debug('[+] Getting access token from : {}'.format(self.token_endpoint))
 
-        token_response = requests.post(self.token_endpoint, json=token_data)
+            token_response = requests.post(self.token_endpoint, json=token_data)
 
-        self.access_token = token_response.json()['access_token']
+            self.access_token = token_response.json()['access_token']
 
-        token_data = json.loads(self.decode_token())
+            token_data = json.loads(self.decode_token())
 
-        if 'exp' in token_data:
-            exp = datetime.datetime.utcfromtimestamp(token_data['exp'])
-            logging.debug('[+] Token exp claim: {}'.format(token_data['exp']))
+            if 'exp' in token_data:
+                exp = datetime.datetime.utcfromtimestamp(token_data['exp'])
+                logging.debug('[+] Token exp claim: {}'.format(token_data['exp']))
 
-        now = datetime.datetime.utcnow()
-        logging.debug('[+] UTC now: {}'.format(now))
-        logging.debug('[+] Time delta to token expire: {}'.format((exp-now).seconds))
+            now = datetime.datetime.utcnow()
+            logging.debug('[+] UTC now: {}'.format(now))
+            logging.debug('[+] Time delta to token expire: {}'.format((exp-now).seconds))
 
 
-        ##
-        ## TODO: multiply expiration delta by random percentage
-        ##       between 0.7 (~16hrs) and 0.9 (~21hrs) to prevent
-        ##       a potential instantaineous mass token refresh 
-        ##       bomb at scale
-        ##
-        self.token_refresh_interval = ((exp-now).seconds)*0.8
-        logging.debug('[+] Token refresh interval: {}'.format(self.token_refresh_interval))
+            ##
+            ## TODO: multiply expiration delta by random percentage
+            ##       between 0.7 (~16hrs) and 0.9 (~21hrs) to prevent
+            ##       a potential instantaineous mass token refresh 
+            ##       bomb at scale
+            ##
+            self.token_refresh_interval = ((exp-now).seconds)*0.8
+            logging.debug('[+] Token refresh interval: {}'.format(self.token_refresh_interval))
 
-        return self.access_token
+            return self.access_token
+
+        except Exception as e:
+            logging.debug('[-] Error getting token: {}'.format(e))
 
 
     ##########################################################################
