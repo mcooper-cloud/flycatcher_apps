@@ -252,7 +252,7 @@ clientGrants:
       - 'create:organization_member_roles'
       - 'read:organization_member_roles'
       - 'delete:organization_member_roles'
-  - client_id: '##PROJECT_NAME## ##ENVIRONMENT## Web App'
+  - client_id: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-MGMT-API'
     audience: '##AUTH0_MGMT_API_ENDPOINT##'
     scope:
       - 'read:users'
