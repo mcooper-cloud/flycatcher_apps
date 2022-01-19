@@ -16,6 +16,18 @@
         "ParameterValue" : "{{ LogoURL }}"
     },
     {
+        "ParameterKey" : "Auth0Domain",
+        "ParameterValue" : "{{ Auth0Domain }}"
+    },
+    {
+        "ParameterKey" : "Auth0IssuerBaseURL",
+        "ParameterValue" : "{{ Auth0IssuerBaseURL }}"
+    },
+    {
+        "ParameterKey" : "Auth0Audience",
+        "ParameterValue" : "{{ Auth0Audience }}"
+    },
+    {
         "ParameterKey" : "VPCCIDR",
         "ParameterValue" : "{{ VPCCIDR }}"
     },
