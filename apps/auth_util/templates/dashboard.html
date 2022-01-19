@@ -97,11 +97,25 @@
             </tr>
             <tr>
                 <th scope="row" class="profile-key">Access Token</th>
-                <td class="profile-value">{{ session.token.access_token }}</td>
+                <td class="profile-value">
+                    <div class="jwt">
+                        <a target="_blank" href="https://jwt.io/#token={{ session.token.access_token }}">
+                            Decode Access Token
+                        </a>
+                    </div>
+                    {{ session.token.access_token }}
+                </td>
             </tr>
             <tr>
                 <th scope="row" class="profile-key">ID Token</th>
-                <td class="profile-value">{{ session.token.id_token }}</td>
+                <td class="profile-value">
+                    <div class="jwt">
+                        <a target="_blank" href="https://jwt.io/#token={{ session.token.id_token }}">
+                            Decode ID Token
+                        </a>
+                    </div>                    
+                    {{ session.token.id_token }}
+                </td>
             </tr>
             <tr>
                 <th scope="row" class="profile-key">Expires In</th>

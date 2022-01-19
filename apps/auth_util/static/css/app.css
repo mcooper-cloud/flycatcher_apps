@@ -27,6 +27,18 @@ h3 {
     padding:  10px;
 }
 
+.jwt {
+    background-image: url(https://jwt.io/img/pic_logo.svg);
+    background-repeat: no-repeat;
+    background-size: 15px 15px;
+    padding: 5px;
+    padding-left: 20px;
+    margin-left: 80%;
+    display: block;
+    font-size: 90%;
+    background-position-y:  8px;
+}
+
 .login-box {
 
     padding: 0;
