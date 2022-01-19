@@ -7,9 +7,11 @@ ENV_SH_PATH=$CODEBUILD_SRC_DIR/$ENV_PATH/$ENV_SH
 source $ENV_SH_PATH
 
 install_auth0_deploy_cli(){
+    echo "[+] Installing Auth0 Deploy CLI in ${CODEBUILD_SRC_DIR}/${AUTH0_DEPLOY_PATH}"
     cd $CODEBUILD_SRC_DIR/$AUTH0_DEPLOY_PATH
     npm install
     
+    echo "[+] Installing Auth0 Deploy CLI in ${CODEBUILD_SRC_DIR}/${AUTH0_EXPORT_PATH}"
     cd $CODEBUILD_SRC_DIR/$AUTH0_EXPORT_PATH
     npm install
 }
@@ -30,3 +32,4 @@ config
 ## values into the environment
 ##
 source $ENV_SH_PATH
+install_auth0_deploy_cli
