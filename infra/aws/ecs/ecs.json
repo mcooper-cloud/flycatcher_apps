@@ -1324,6 +1324,24 @@
             "Description":"Your ALB DNS URL",
             "Value":{"Fn::GetAtt":["ECSALB","DNSName"]}
         },
+        "WebAppHTTPURL":{
+            "Description":"Web app HTTP URL",
+            "Value":{ "Fn::Join":["",[
+                { "Fn::If" : [
+                    "LoadBalancerProtocol",
+                    "http://",
+                    "https://"
+                ]},
+                { "Fn::If" : [
+                    "IsEmptyDomain",
+                    {"Fn::GetAtt":["ECSALB","DNSName"]},
+                    { "Fn::Join":[".", [
+                        {"Ref": "AppSubDomain"}, 
+                        {"Ref": "Domain"}
+                    ]]}
+                ]}
+            ]]}
+        },
         "Auth0CallbackURL":{
             "Description":"Auth0 callback URL (for dynamic tenant configuration)",
             "Value": { "Fn::Join":["",[

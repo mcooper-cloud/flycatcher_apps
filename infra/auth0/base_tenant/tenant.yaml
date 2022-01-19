@@ -1,0 +1,357 @@
+rules: []
+hooks: []
+pages: []
+resourceServers:
+  - name: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-resource-server'
+    identifier: '##AUTH0_API_AUDIENCE##'
+    allow_offline_access: false
+    signing_alg: RS256
+    skip_consent_for_verifiable_first_party_clients: true
+    token_lifetime: 86400
+    token_lifetime_for_web: 7200
+    enforce_policies: true
+    token_dialect: 'access_token_authz'
+    scopes: []
+clients:
+  - name: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-MGMT-API'
+    app_type: non_interactive
+    cross_origin_auth: false
+    custom_login_page_on: true
+    grant_types:
+      - client_credentials
+    is_first_party: true
+    is_token_endpoint_ip_header_trusted: false
+    jwt_configuration:
+      alg: RS256
+      lifetime_in_seconds: 36000
+      secret_encoded: false
+    oidc_conformant: true
+    refresh_token:
+      rotation_type: non-rotating
+      expiration_type: non-expiring
+    sso_disabled: false
+    token_endpoint_auth_method: client_secret_post
+  - name: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-web-app'
+    allowed_clients: []
+    allowed_logout_urls:
+      - 'https://##AUTH0_SUBDOMAIN##.us.webtask.run/auth0-authentication-api-debugger'
+      - '##AUTH0_LOGOUT_URL##'
+    app_type: regular_web
+    callbacks:
+      - 'https://##AUTH0_SUBDOMAIN##.us.webtask.run/auth0-authentication-api-debugger'
+      - '##AUTH0_CALLBACK_URL##'
+    initiate_login_uri: '##WEB_APP_HTTP_URL##/login'
+    client_aliases: []
+    cross_origin_auth: false
+    custom_login_page_on: true
+    grant_types:
+      - authorization_code
+      - implicit
+      - refresh_token
+      - client_credentials
+    is_first_party: true
+    is_token_endpoint_ip_header_trusted: false
+    jwt_configuration:
+      alg: RS256
+      lifetime_in_seconds: 36000
+      secret_encoded: false
+    native_social_login:
+      apple:
+        enabled: false
+      facebook:
+        enabled: false
+    oidc_conformant: true
+    refresh_token:
+      expiration_type: non-expiring
+      leeway: 0
+      infinite_token_lifetime: true
+      infinite_idle_token_lifetime: true
+      token_lifetime: 31557600
+      idle_token_lifetime: 2592000
+      rotation_type: non-rotating
+    sso_disabled: false
+    token_endpoint_auth_method: client_secret_post
+    organization_usage: allow
+databases:
+  - name: "##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-customers"
+    strategy: auth0
+    enabled_clients:
+      - '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-web-app'
+      - '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-MGMT-API'
+    is_domain_connection: false
+    options:
+      mfa:
+        active: true
+        return_enroll_settings: true
+      import_mode: false
+      disable_signup: false
+      passwordPolicy: null
+      password_history:
+        size: 5
+        enable: false
+      strategy_version: 2
+      requires_username: false
+      password_dictionary:
+        enable: false
+        dictionary: []
+      brute_force_protection: true
+      password_no_personal_info:
+        enable: false
+      password_complexity_options:
+        min_length: 1
+      enabledDatabaseCustomization: false
+    realms:
+      - "##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-customers"
+connections: []
+tenant:
+  enabled_locales:
+    - en
+  flags:
+    allow_legacy_delegation_grant_types: false
+    allow_legacy_ro_grant_types: false
+    allow_other_legacy_grant_types: false
+    new_universal_login_experience_enabled: true
+    universal_login: true
+    disable_clickjack_protection_headers: false
+  friendly_name: "##PROJECT_NAME##-##ENVIRONMENT###-##SYSTEM_NUMBER##"
+  picture_url: '##LOGO_URL##'
+  support_email: ''
+  support_url: ''
+  universal_login:
+    colors:
+      page_background: '##PAGE_BACKGROUND_COLOR##'
+      primary: '##PRIMARY_COLOR##'
+emailTemplates: []
+clientGrants:
+  - client_id: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-MGMT-API'
+    audience: '##AUTH0_MGMT_API_ENDPOINT##'
+    scope:
+      - 'read:client_grants'
+      - 'create:client_grants'
+      - 'delete:client_grants'
+      - 'update:client_grants'
+      - 'read:users'
+      - 'update:users'
+      - 'delete:users'
+      - 'create:users'
+      - 'read:users_app_metadata'
+      - 'update:users_app_metadata'
+      - 'delete:users_app_metadata'
+      - 'create:users_app_metadata'
+      - 'read:user_custom_blocks'
+      - 'create:user_custom_blocks'
+      - 'delete:user_custom_blocks'
+      - 'create:user_tickets'
+      - 'read:clients'
+      - 'update:clients'
+      - 'delete:clients'
+      - 'create:clients'
+      - 'read:client_keys'
+      - 'update:client_keys'
+      - 'delete:client_keys'
+      - 'create:client_keys'
+      - 'read:connections'
+      - 'update:connections'
+      - 'delete:connections'
+      - 'create:connections'
+      - 'read:resource_servers'
+      - 'update:resource_servers'
+      - 'delete:resource_servers'
+      - 'create:resource_servers'
+      - 'read:device_credentials'
+      - 'update:device_credentials'
+      - 'delete:device_credentials'
+      - 'create:device_credentials'
+      - 'read:rules'
+      - 'update:rules'
+      - 'delete:rules'
+      - 'create:rules'
+      - 'read:rules_configs'
+      - 'update:rules_configs'
+      - 'delete:rules_configs'
+      - 'read:hooks'
+      - 'update:hooks'
+      - 'delete:hooks'
+      - 'create:hooks'
+      - 'read:actions'
+      - 'update:actions'
+      - 'delete:actions'
+      - 'create:actions'
+      - 'read:email_provider'
+      - 'update:email_provider'
+      - 'delete:email_provider'
+      - 'create:email_provider'
+      - 'blacklist:tokens'
+      - 'read:stats'
+      - 'read:tenant_settings'
+      - 'update:tenant_settings'
+      - 'read:logs'
+      - 'read:logs_users'
+      - 'read:shields'
+      - 'create:shields'
+      - 'update:shields'
+      - 'delete:shields'
+      - 'read:anomaly_blocks'
+      - 'delete:anomaly_blocks'
+      - 'update:triggers'
+      - 'read:triggers'
+      - 'read:grants'
+      - 'delete:grants'
+      - 'read:guardian_factors'
+      - 'update:guardian_factors'
+      - 'read:guardian_enrollments'
+      - 'delete:guardian_enrollments'
+      - 'create:guardian_enrollment_tickets'
+      - 'read:user_idp_tokens'
+      - 'create:passwords_checking_job'
+      - 'delete:passwords_checking_job'
+      - 'read:custom_domains'
+      - 'delete:custom_domains'
+      - 'create:custom_domains'
+      - 'update:custom_domains'
+      - 'read:email_templates'
+      - 'create:email_templates'
+      - 'update:email_templates'
+      - 'read:mfa_policies'
+      - 'update:mfa_policies'
+      - 'read:roles'
+      - 'create:roles'
+      - 'delete:roles'
+      - 'update:roles'
+      - 'read:prompts'
+      - 'update:prompts'
+      - 'read:branding'
+      - 'update:branding'
+      - 'delete:branding'
+      - 'read:log_streams'
+      - 'create:log_streams'
+      - 'delete:log_streams'
+      - 'update:log_streams'
+      - 'create:signing_keys'
+      - 'read:signing_keys'
+      - 'update:signing_keys'
+      - 'read:limits'
+      - 'update:limits'
+      - 'create:role_members'
+      - 'read:role_members'
+      - 'delete:role_members'
+      - 'read:organizations'
+      - 'update:organizations'
+      - 'create:organizations'
+      - 'delete:organizations'
+      - 'read:organization_connections'
+      - 'create:organization_connections'
+      - 'update:organization_connections'
+      - 'delete:organization_connections'
+      - 'create:organization_invitations'
+      - 'read:organization_invitations'
+      - 'delete:organization_invitations'
+      - 'create:organization_members'
+      - 'read:organization_members'
+      - 'delete:organization_members'
+      - 'create:organization_member_roles'
+      - 'read:organization_member_roles'
+      - 'delete:organization_member_roles'
+  - client_id: '##PROJECT_NAME## ##ENVIRONMENT## Web App'
+    audience: '##AUTH0_MGMT_API_ENDPOINT##'
+    scope:
+      - 'read:users'
+      - 'update:users'
+      - 'delete:users'
+      - 'create:users'
+      - 'read:users_app_metadata'
+      - 'update:users_app_metadata'
+      - 'delete:users_app_metadata'
+      - 'create:users_app_metadata'
+      - 'read:user_custom_blocks'
+      - 'create:user_custom_blocks'
+      - 'delete:user_custom_blocks'
+      - 'read:connections'
+      - 'update:connections'
+      - 'delete:connections'
+      - 'create:connections'
+      - 'read:resource_servers'
+      - 'update:resource_servers'
+      - 'delete:resource_servers'
+      - 'create:resource_servers'
+      - 'read:custom_domains'
+      - 'create:custom_domains'
+      - 'update:custom_domains'
+      - 'delete:custom_domains'
+      - 'read:grants'
+      - 'delete:grants'
+      - 'read:roles'
+      - 'create:roles'
+      - 'delete:roles'
+      - 'update:roles'
+      - 'create:role_members'
+      - 'read:role_members'
+      - 'delete:role_members'
+      - 'read:organizations'
+      - 'update:organizations'
+      - 'create:organizations'
+      - 'delete:organizations'
+      - 'create:organization_members'
+      - 'read:organization_members'
+      - 'delete:organization_members'
+      - 'create:organization_member_roles'
+      - 'read:organization_member_roles'
+      - 'delete:organization_member_roles'
+      - 'read:organization_connections'
+      - 'create:organization_connections'
+      - 'update:organization_connections'
+      - 'delete:organization_connections'
+      - 'create:organization_invitations'
+      - 'read:organization_invitations'
+      - 'delete:organization_invitations'
+guardianFactors:
+  - name: duo
+    enabled: false
+  - name: email
+    enabled: false
+  - name: otp
+    enabled: false
+  - name: push-notification
+    enabled: false
+  - name: sms
+    enabled: false
+guardianFactorProviders: []
+guardianFactorTemplates: []
+guardianPolicies:
+  policies: []
+guardianPhoneFactorSelectedProvider:
+  provider: auth0
+guardianPhoneFactorMessageTypes:
+  message_types: []
+branding:
+  colors:
+    page_background: '##PAGE_BACKGROUND_COLOR##'
+    primary: '##PRIMARY_COLOR##'
+  logo_url: '##LOGO_URL##'
+prompts:
+  universal_login_experience: new
+migrations: {}
+actions:
+  - name: post-login-action
+    code: ./actions/post_login.js
+    runtime: 'node16'
+    dependencies:
+      - name: auth0
+        version: latest
+    deployed: true
+    secrets:
+      - name: CUSTOM_SCOPE_NAMESPACE
+        value: '##WEB_APP_HTTP_URL##'
+    status: built
+    supported_triggers:
+      - id: post-login
+        version: v2
+triggers:
+  credentials-exchange: []
+  post-change-password: []
+  post-login: 
+    - action_name: post-login-action
+      display_name: post-login-action
+  post-user-registration: []
+  pre-user-registration: []
+  send-phone-message: []

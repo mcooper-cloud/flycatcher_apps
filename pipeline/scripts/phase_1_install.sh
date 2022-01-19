@@ -6,6 +6,14 @@ echo "[+] $(date) - Entered STAGE 1 PREBUILD - phase 1 install"
 ENV_SH_PATH=$CODEBUILD_SRC_DIR/$ENV_PATH/$ENV_SH
 source $ENV_SH_PATH
 
+install_auth0_deploy_cli(){
+    cd $CODEBUILD_SRC_DIR/$AUTH0_DEPLOY_PATH
+    npm install
+    
+    cd $CODEBUILD_SRC_DIR/$AUTH0_EXPORT_PATH
+    npm install
+}
+
 install_configure(){
     pip3 install -r requirements.txt
 }

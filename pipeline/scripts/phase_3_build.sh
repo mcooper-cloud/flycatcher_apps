@@ -35,6 +35,9 @@ main(){
     ##
     app_teardown
     app_deploy
+    get_app_stack_outputs
+    
+    auth0_deploy "${CODEBUILD_SRC_DIR}/${AUTH0_TENANT_YAML}" "a0deploy"
 
 }
 

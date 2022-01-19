@@ -1,0 +1,28 @@
+{
+    "name": "flycatcher-auth0-deploy",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Automated deploy of Auth0 tenant configuration",
+    "license": "MIT",
+    "author": "Matt C",
+    "main": "config.js",
+    "bugs": {
+        "url": "https://github.com/mcooper-cloud/flycatcher_apps/issues"
+    },
+    "homepage": "https://github.com/mcooper-cloud/flycatcher_apps#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mcooper-cloud/flycatcher_apps.git"
+    },
+    "scripts": {
+        "start": "node config.js"
+    },
+    "config": {},
+    "keywords": [
+        "auth0",
+        "aws"
+    ],
+    "dependencies": {
+        "auth0-deploy-cli": "^7.2.0"
+    }
+}
