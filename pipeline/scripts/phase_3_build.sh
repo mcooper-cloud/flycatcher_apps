@@ -23,6 +23,7 @@ function app_teardown(){
 main(){
 
     get_pipeline_stack_outputs
+    get_secrets_params
 
     ##
     ## stage web app
