@@ -673,7 +673,12 @@
                                 "Value": {"Fn::GetAtt":["ECSALB","DNSName"]}
                             }
                         ],
-                        "Secrets": []
+                        "Secrets": [
+                            {
+                                "Name": "APP_SESSION_SECRET",
+                                "ValueFrom": {"Ref" : "AppSessionSecret"}
+                            }
+                        ]
                     }
                 ],
                 "Volumes":[
