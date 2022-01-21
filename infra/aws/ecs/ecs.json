@@ -753,7 +753,7 @@
                             {
                                 "Name": "APP_SESSION_SECRET",
                                 "ValueFrom": {"Ref" : "AppSessionSecret"}
-                            }                            
+                            }
                         ]
                     }
                 ],
