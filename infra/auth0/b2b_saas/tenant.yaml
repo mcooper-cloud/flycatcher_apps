@@ -2,7 +2,7 @@ rules: []
 hooks: []
 pages: []
 resourceServers:
-  - name: '##PROJECT_NAME## ##ENVIRONMENT## Resource Server'
+  - name: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-resource-server'
     identifier: '##AUTH0_API_AUDIENCE##'
     allow_offline_access: false
     signing_alg: RS256
@@ -56,7 +56,7 @@ roles:
       - permission_name: "read:subscription"
         resource_server_identifier: '##AUTH0_API_AUDIENCE##'
 clients:
-  - name: API Explorer Application
+  - name: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-MGMT-API'
     app_type: non_interactive
     cross_origin_auth: false
     custom_login_page_on: true
@@ -74,7 +74,7 @@ clients:
       expiration_type: non-expiring
     sso_disabled: false
     token_endpoint_auth_method: client_secret_post
-  - name: '##PROJECT_NAME## ##ENVIRONMENT## Web App'
+  - name: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-web-app'
     allowed_clients: []
     allowed_logout_urls:
       - 'https://##AUTH0_SUBDOMAIN##.us.webtask.run/auth0-authentication-api-debugger'
@@ -116,11 +116,11 @@ clients:
     token_endpoint_auth_method: client_secret_post
     organization_usage: allow
 databases:
-  - name: "##PROJECT_NAME##-##ENVIRONMENT##-customers"
+  - name: "##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-customers"
     strategy: auth0
     enabled_clients:
-      - '##PROJECT_NAME## ##ENVIRONMENT## Web App'
-      - API Explorer Application
+      - '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-web-app'
+      - '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-MGMT-API'
     is_domain_connection: false
     options:
       mfa:
@@ -144,7 +144,7 @@ databases:
         min_length: 1
       enabledDatabaseCustomization: false
     realms:
-      - "##PROJECT_NAME##-##ENVIRONMENT##-customers"
+      - "##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-customers"
 connections: []
 tenant:
   enabled_locales:
@@ -156,7 +156,7 @@ tenant:
     new_universal_login_experience_enabled: true
     universal_login: true
     disable_clickjack_protection_headers: false
-  friendly_name: "##PROJECT_NAME##"
+  friendly_name: "##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##"
   picture_url: '##LOGO_URL##'
   support_email: ''
   support_url: ''
@@ -166,7 +166,7 @@ tenant:
       primary: '##PRIMARY_COLOR##'
 emailTemplates: []
 clientGrants:
-  - client_id: API Explorer Application
+  - client_id: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-MGMT-API'
     audience: '##AUTH0_MGMT_API_ENDPOINT##'
     scope:
       - 'read:client_grants'
@@ -295,7 +295,7 @@ clientGrants:
       - 'create:organization_member_roles'
       - 'read:organization_member_roles'
       - 'delete:organization_member_roles'
-  - client_id: '##PROJECT_NAME## ##ENVIRONMENT## Web App'
+  - client_id: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-web-app'
     audience: '##AUTH0_MGMT_API_ENDPOINT##'
     scope:
       - 'read:users'
@@ -368,8 +368,8 @@ guardianPhoneFactorMessageTypes:
   message_types: []
 branding:
   colors:
-    page_background: '#FFFFFF'
-    primary: '#0D2769'
+    page_background: '##PAGE_BACKGROUND_COLOR##'
+    primary: '##PRIMARY_COLOR##'
   logo_url: '##LOGO_URL##'
 prompts:
   universal_login_experience: new
