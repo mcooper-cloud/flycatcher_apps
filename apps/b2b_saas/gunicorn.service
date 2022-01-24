@@ -1,0 +1,14 @@
+##
+## /etc/systemd/system/gunicorn.service
+##
+
+[Unit]
+Description=gunicorn to serve flask-project
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/local/apps/
+ExecStart=/usr/bin/gunicorn -b 0.0.0.0:5000 --chdir b2b_saas/ server:app
+
+[Install]
+WantedBy=multi-user.target

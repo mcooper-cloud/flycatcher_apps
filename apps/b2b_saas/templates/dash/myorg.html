@@ -1,0 +1,101 @@
+{% extends "dash/dashboard.html" %}
+
+{% block main_content %}
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="nav-title">My Organization</div>
+        {% if data is defined and data.is_org_admin is true %}
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard/createconn">New Connection</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard/invite">Invite Member</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/dashboard/addons">Add Ons</a>
+                </li>
+            </ul>
+        {% endif %}
+    </nav>
+
+
+    <table class="table-responsive table-striped table-sm">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if 'org_id' in session.jwt_payload %}
+                <tr>
+                    <th scope="row" class="profile-key">Organization ID</th>
+                    <td class="profile-value">{{ session.jwt_payload.org_id }}</td>
+                </tr>
+            {% endif %}
+            {% if data is defined %}
+                {% if 'login_uri' in data %}
+                    <tr>
+                        <th scope="row" class="profile-key">Organization Login URL</th>
+                        <td class="profile-value">
+                            <a href="{{ data.login_uri }}">{{ data.login_uri }}</a>
+                        </td>
+                    </tr>
+                {% endif %}
+
+                {% if 'current_claim_list' in data %}
+                    {% for claim in data['current_claim_list'] %}
+                        {% if claim in data %}
+                            <tr>
+                                <th scope="row" class="profile-key">{{ claim }}</th>
+                                <td class="profile-value">{{ data[claim] }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if 'primary_claim_list' in data %}
+                    {% for claim in data['primary_claim_list'] %}
+                        {% if claim in data %}
+                            <tr>
+                                <th scope="row" class="profile-key">{{ claim }}</th>
+                                <td class="profile-value">{{ data[claim] }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                {% if 'roles' in data %}
+                    <tr>
+                        <th scope="row" class="profile-key">Roles</th>
+                        <td class="profile-value">
+                            <ul class="roles">
+                                {% for role in data['roles'] %}
+                                    <li class="permissions">
+                                        <span class="label">{{ role }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                {% endif %}
+
+                {% if 'permissions' in data %}
+                    <tr>
+                        <th scope="row" class="profile-key">Permissions</th>
+                        <td class="profile-value">
+                            <ul class="permissions">
+                                {% for permission in data['permissions'] %}
+                                    <li class="permissions">
+                                        <span class="label">{{ permission }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

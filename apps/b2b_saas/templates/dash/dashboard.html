@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+        <!-- font awesome from BootstrapCDN -->
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+        <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
+        <title>HyperUnicorn Dashboard</title>
+        <link rel="icon" type="image/svg+xml" href="https://openmoji.org/data/color/svg/1F984.svg">
+        {% endblock %}
+    </head>
+    <body class="dashboard">
+        {% if session is defined %}
+        <div class="container-fluid dashboard-wrapper">
+            <div class="row">
+                {% block sidebar %}
+                <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                    <div class="sidebar-sticky">
+                        <div class="dashboard-logo">
+                            <img src="https://openmoji.org/data/color/svg/1F984.svg" height="56" alt="HyperUnicorn">
+                            HyperUnicorn
+                        </div>
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <!-- <a class="nav-link active" href="/dashboard"> -->
+                                <a class="nav-link" href="/dashboard">
+                                    Dashboard <!-- <span class="sr-only">(current)</span> -->
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/dashboard/myprofile">
+                                    My Profile
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/dashboard/myorg">
+                                    My Organization
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/dashboard/addons">
+                                    Add Ons
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                {% endblock %}
+                <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+                    {% block navbar %}
+                    <div class="dashboard-nav">
+                        <nav class="navbar navbar-expand-md navbar-light header-content">
+                            <div class="collapse navbar-collapse" id="navbarCollapse">
+                                <div class="navbar-nav">
+                                    <a href="/docs" class="nav-item nav-link active">Docs</a>
+                                    <a href="/support" class="nav-item nav-link">Support</a>
+                                </div>
+                                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-list-4" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                                    <span class="navbar-toggler-icon"></span>
+                                </button>
+                                <div class="collapse navbar-collapse" id="navbar-list-4">
+                                    <ul class="navbar-nav">
+                                        <li class="nav-item dropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <img src="{{ session.jwt_payload.picture }}" width="40" height="40" class="rounded-circle profile-icon">
+                                            </a>
+                                            <div class="dropdown-menu profile-menu" aria-labelledby="navbarDropdownMenuLink">
+                                                <table class="dropdown-profile">
+                                                    <tr><td class="profile-icon">
+                                                        <img src="{{ session.jwt_payload.picture }}" width="40" height="40" class="rounded-circle profile-icon">
+                                                    </td><td class="profile-name">
+                                                        {{ session.jwt_payload.nickname }}
+                                                    </td></tr>
+                                                </table>
+                                                <a class="dropdown-item" href="/dashbaord/myprofile/edit">
+                                                    Edit Profile
+                                                </a>
+                                                <!-- <a class="dropdown-item" href="#">Log Out</a> -->
+                                                <a class="btn btn-primary logout dropdown-item" href="/logout">
+                                                    Logout
+                                                </a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                    {% endblock %}
+                    {% block main_content %}
+                    <h2>Dashboard</h2>
+                    <div class="row dashboard-row">
+                        <div class="col-sm-4 dashboard-grid">
+                            <div class="dashboard-card">
+                                <a href="/dashboard/myprofile" class="dashboard-option">
+                                    <img class="dashboard-icon" src="{{ url_for('static', filename='img/profile.png') }}" alt="My Profile">
+                                    <div class="link-label">My Profile</div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 dashboard-grid">
+                            <div class="dashboard-card">
+                                <a href="/dashboard/myorg" class="dashboard-option">
+                                    <img class="dashboard-icon" src="{{ url_for('static', filename='img/organization.png') }}" alt="My Organization">
+                                    <div class="link-label">My Organization</div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-sm-4 dashboard-grid">
+                            <div class="dashboard-card">
+                                <a href="/dashboard/addons" class="dashboard-option">
+                                    <img class="dashboard-icon" src="{{ url_for('static', filename='img/addons.png') }}" alt="Add-ons">
+                                    <div class="link-label">Add-ons</div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endblock %}
+                </main>
+            </div>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+
+        <!--
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        -->
+
+
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+        {% endif %}
+    </body>
+</html>

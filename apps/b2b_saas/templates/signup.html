@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block main_content %}
+
+    <div class="row signup-content">
+        <div class="col-sm-6 main-content">
+            <h3>Join HyperUnicorn</h3>
+            {% if data is defined %}
+                {% if 'title_message' in data %}
+                    <p>Message: {{ data.title_message }}</p>
+                {% endif %}
+                {% if 'tier' in data %}
+                    <p>Tier: {{ data.tier }}</p>
+                {% endif %}
+                {% if 'org_id' in data %}
+                    <p>Organization: {{ data.org_id }}</p>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        {% if form is defined %}
+            {#
+            ######################################################################
+            ######################################################################
+            ##
+            ## form design logic
+            ##
+            ##  TODO: remove form if session is defined
+            ##
+            ######################################################################
+            ######################################################################
+            #}
+
+            <div class="col-sm-4 signup-form">
+                <h1>Get Started</h1>
+                <p>First, create an organization to collaborate with your peers</p>
+
+                {% if data is defined %}
+                    {% if 'tier' in data %}
+                        <form method="POST" action="{{ url_for('signup') }}?tier={{ data.tier }}">
+                    {% else %}
+                        <form method="POST" action="{{ url_for('signup') }}">
+                    {% endif %}
+                {% endif %}
+
+                    {{ form.csrf_token }}
+                    <div class="form-group">
+                        <fieldset class="form-field">
+                            {{ form.organization.label }}
+                            {{ form.organization(class_="form-control") }}
+                        </fieldset>
+                    </div>
+                    <div class="form-group">
+                        <fieldset class="form-field">
+                            {{ form.email.label }}
+                            {{ form.email(class_="form-control") }}
+                        </fieldset>
+                    </div>
+                    {{ form.submit(class_="btn btn-primary") }}
+                </form>
+            </div>
+        {% else %}
+
+            {#
+            ######################################################################
+            ######################################################################
+            ##
+            ## post submission form design logic
+            ##
+            ######################################################################
+            ######################################################################
+            #}
+
+            {% if data is defined %}
+
+                {% if 'user_exists' in data and data.user_exists is true %}
+
+                    <div class="col-sm-4 signup-form">
+                        <h1>You're already here!!</h1>
+                        <p>
+                            The email address you provided already exists in our system.  Click here to 
+                            <a href="/login">Log In</a>
+                        </p>
+                    </div>
+                {% else %}
+                    <div class="col-sm-4 signup-form">
+                        <h1>You've Got Mail!</h1>
+                        <p>Please check your inbox for an invitation</p>
+                        <img src="{{ url_for('static', filename='img/youve_got_mail.png') }}" height="125" alt="HyperUnicorn">
+                    </div>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block tier_option %}
+    <div></div>
+{% endblock %}

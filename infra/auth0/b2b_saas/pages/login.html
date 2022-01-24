@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="stylesheet" href="https://cdn.auth0.com/ulp/react-components/1.16.2/css/main.cdn.min.css" />
+    <style id="custom-styles-container">
+      /* dynamically generated */
+    </style>
+    <title id="head-title"></title>
+  </head>
+  
+  <body>
+    <div class="main-wrapper _page-background">
+      <main class="ulp-outer mfa-sms-enrollment">
+        <section class="ulp-box">
+          <div class="ulp-box-inner _prompt-box">
+            <div class="ulp-main">
+              <header class="ulp-header _prompt-header">
+                <img class="header-logo _header-logo" id="prompt-logo-center" />
+                <h1 id="body-title" class="header-title _header-title"></h1>
+                <div class="header-description _header-description">
+                  <p id="message" class="text-simple _text">
+                  </p>
+                </div>
+              </header>
+
+              <div class="ulp-container _prompt-body">
+                <div class="ulp-fieldset-container _fieldset-container">
+
+                  <!-- passwordless phone authentication start -->
+                  <div id="phone-number-group" class="ulp-input-group" style="display: none;">
+                    <form id="phone-number-form" class="ulp-db _form-code-input">
+                      <button type="submit" name="action" value="pick-country-code" class="ulp-button ulp-button-simple selector-button _selector-button _button-simple _button-pick-country-code">
+                        <span class="ulp-icon flag-icon flag-icon-us "></span>
+                        <span class="selector-button-text">United States, US, +1</span>
+                        <span class="ulp-icon arrow-right"></span>
+                      </button>
+
+                      <div class="ulp-fieldset-container _fieldset-container">
+                        <fieldset class="ulp-input-group">
+                          <div id="phone-number-input-container" class="input-container _input-container text _input-container-phone">
+                            <label class="input-label _label _label-phone" for="phone">
+                              Phone number
+                            </label>
+                            
+                            <input class="input _input _input-phone" name="phone" id="phone" type="tel" aria-label="Enter your phone number" value="" required autoComplete="off" autoFocus />
+                          </div>
+                        </fieldset>
+                      </div>
+
+                      <p class="ulp-forgot-password-link _forgot-password-container">
+                        <a id="email-instead-link" class="link _link-forgot-password _link" href="#">Use an email address instead</a>
+                      </p>
+                      
+                      <div class="button-bar">
+                        <button id="phone-number-submit" type="submit" name="action" value="default" class="ulp-button ulp-button-default _button _button-default _button-code-input">Continue</button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- passwordless email authentication start -->
+                  <div id="email-group" class="ulp-input-group" style="display: none;">
+                    <form id="email-form" class="ulp-db _form-code-input">
+                      <div class="ulp-fieldset-container _fieldset-container">
+                        <fieldset class="ulp-input-group">
+                          <div id="email-input-container" class="input-container _input-container text _input-container-username">
+                            <label class="input-label _label _label-username" for="username">
+                              Email address
+                            </label>
+                          
+                            <input class="input _input _input-username" inputmode="email" name="username" id="username" type="text" aria-label="Email address" value="" required="" autofocus="">                          
+                          </div>
+                        </fieldset>
+                      </div>
+
+                      <div id="password-input-container" class="input-container _input-container password _input-container-password">
+                        <label class="input-label no-js _label _label-password" for="password">
+                          Password
+                        </label>
+                      
+                        <input class="input _input _input-password" name="password" id="password" type="password" aria-label="Password" required="">
+                        <span class="ulp-icon password js-required "></span>
+                      </div>                      
+
+                      <p class="ulp-forgot-password-link _forgot-password-container">
+                        <a id="phone-instead-link" class="link _link-forgot-password _link" href="#">Sign in with phone instead</a>
+                      </p>
+  
+                      <div class="button-bar">
+                        <button id="email-submit" type="submit" name="action" value="default" class="ulp-button ulp-button-default _button _button-default _button-code-input">Continue</button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- otp authentication -->
+                  <div id="otp-group" class="ulp-input-group" style="display: none;">
+                    <div class="ulp-authenticator-selector only-one-authenticator _authenticator-selector _only-one-authenticator false">
+                      <span id="to-phone-or-email"></span>
+                      <a id="edit-phone-or-email-link" class="link authenticator-selector-link _link-authenticator-selector _link" href="#">Edit</a>
+                    </div>
+
+                    <form id="otp-form" class="ulp-db _form-code-input">
+                      <div class="ulp-fieldset-container _fieldset-container">
+                        <fieldset class="ulp-input-group">
+                          <div id="otp-input-container" class="input-container _input-container text _input-container-code">
+                            <label class="input-label _label _label-code" for="code">
+                              Enter the 6-digit code
+                            </label>
+                          
+                            <input class="input _input _input-code" name="code" id="code" type="text" aria-label="Enter the 6-digit code" value="" required autoComplete="off" autoFocus />
+                          </div>
+                        </fieldset>
+                      </div>
+
+                      <div class="button-bar">
+                        <button id="otp-submit" type="submit" name="action" value="default" class="ulp-button ulp-button-default _button _button-default _button-code-input">Continue</button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <!-- social authentication -->
+                  <div id="social-group" class="ulp-input-group">
+                    <div class="c04a1a45e cf651b178">
+                      <span>Or</span>
+                    </div>
+                    
+                    <div class="c93de88ce c00a9ca5f">
+                      <!-- Google sign-in -->
+                      <form id="google-form" class="ca4e08d80 c334f4f97 c9d03d5f1">
+                        <button id="google-submit" type="submit" class="ca9064714 c12ffe799 c8b74aabd" data-provider="google">
+                          <span class="c4c0df5fc c33814d2c" data-provider="google"></span>
+                          <span class="c87998dbe">Continue with Google</span>
+                        </button>
+                      </form>
+
+                      <!-- Facebook sign-in -->
+                      <form id="facebook-form" class="ca4e08d80 c334f4f97 c9d03d5f1">
+                        <button id="facebook-submit" type="submit" class="ca9064714 c12ffe799 c8b74aabd" data-provider="facebook">
+                          <span class="c4c0df5fc c33814d2c" data-provider="facebook"></span>
+                          <span class="c87998dbe">Continue with Facebook</span>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+      </main>
+    </div>
+
+    <script src="https://cdn.auth0.com/js/auth0/9.13/auth0.min.js"></script>
+    <script src="https://cdn.auth0.com/js/polyfills/1.0/object-assign.min.js"></script>
+    <script>
+      // UI elements
+      const customStylesContainer = document.getElementById('custom-styles-container');
+      const logoImage = document.getElementById('prompt-logo-center');
+      const headTitle = document.getElementById('head-title');
+      const bodyTitle = document.getElementById('body-title');
+      const messageParagraph = document.getElementById('message');
+
+      const phoneNumberGroup = document.getElementById('phone-number-group');
+      const phoneNumberForm = document.getElementById('phone-number-form');
+      const phoneNumberInputContainer = document.getElementById('phone-number-input-container');
+      const phoneNumberField = document.getElementById('phone');
+      const phoneNumberSubmit = document.getElementById('phone-number-submit');
+      const emailInsteadLink = document.getElementById('email-instead-link');
+
+      const emailGroup = document.getElementById('email-group');
+      const emailForm = document.getElementById('email-form');
+      const emailInputContainer = document.getElementById('email-input-container');
+      const usernameField = document.getElementById('username');
+      const passwordField = document.getElementById('password');
+      const passwordInputContainer = document.getElementById('password-input-container');
+      const emailSubmit = document.getElementById('email-submit');
+      const phoneInsteadLink = document.getElementById('phone-instead-link');
+      
+      const otpGroup = document.getElementById('otp-group');
+      const otpForm = document.getElementById('otp-form');
+      const otpInputContainer = document.getElementById('otp-input-container');
+      const toPhoneOrEmailField = document.getElementById('to-phone-or-email');
+      const editPhoneOrEmailLink = document.getElementById('edit-phone-or-email-link');
+      const otpField = document.getElementById('code');
+      const otpSubmit = document.getElementById('otp-submit');
+
+      const socialGroup = document.getElementById('social-group');
+      const googleForm = document.getElementById('google-form');
+      const googleSubmit = document.getElementById('google-submit');
+      const facebookForm = document.getElementById('facebook-form');
+      const facebookSubmit = document.getElementById('facebook-submit');
+
+      // Auth0 config
+      const config = JSON.parse(decodeURIComponent(escape(window.atob('@@config@@'))));
+      console.log('config:', config);
+
+      // generate custom styles with branding colors
+      const colors = config.colors || {};
+      customStylesContainer.innerHTML = `
+        body {
+          background: ${colors.page_background};
+          font-family: ulp-font, -apple-system, BlinkMacSystemFont, Roboto, Helvetica, sans-serif;
+        }
+        .main-wrapper {
+          background: ${colors.page_background};
+        }
+        .ulp-alert.danger {
+          background: #D00E17;
+        }
+        .ulp-alert.success {
+          background: #0A8852;
+        }
+        .ulp-button-default {
+          background-color: ${colors.primary};
+          color: #ffffff;
+        }
+        .ulp-button-success {
+          background-color: #0A8852;
+        }
+        .ulp-button-error {
+          background-color: #D00E17;
+        }
+        @supports (mask-image: url('/static/img/branding-generic/copy-icon.svg')) {
+          @supports not (-ms-ime-align: auto) {
+            .input-container.error::before {
+              background-color: #D00E17;
+            }
+          }
+        }
+        .input.ulp-input-error {
+          border-color: #D00E17;
+        }
+        .error-cloud {
+          background-color: #D00E17;
+        }
+        .error-fatal {
+          background-color: #D00E17;
+        }
+        .error-local {
+          background-color: #D00E17;
+        }
+        .ulp-popover.error {
+          background-color: #D00E17;
+          border-color: #D00E17;
+        }
+        .ulp-popover.error::before {
+          border-bottom-color: #D00E17;
+        }
+        .ulp-popover.error::after {
+          border-bottom-color: #D00E17;
+        }
+        #alert-trigger {
+          background-color: #D00E17;
+        }
+
+        .c04a1a45e+.c93de88ce {
+          margin-top: 24px;
+          margin-top: var(--spacing-3)
+        }
+        .c04a1a45e {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          text-transform: uppercase;
+          border: none;
+          font-size: 12px;
+          font-weight: 500;
+          margin: 0;
+          padding: 24px 0 0;
+          padding: var(--spacing-3) 0 0 0
+        }
+        .c04a1a45e:after,
+        .c04a1a45e:before {
+          content: "";
+          border-bottom: 1px solid #c2c8d0;
+          border-bottom: 1px solid var(--border-default-color);
+          flex: 1 0 auto;
+          height: .5em;
+          margin: 0
+        }
+        .c04a1a45e span {
+          text-align: center;
+          flex: 0.2 0 auto;
+          margin: 0
+        }
+        .ca4e08d80:not(:last-child) {
+          margin-bottom: 8px;
+          margin-bottom: var(--spacing-1)
+        }
+        .ca9064714 {
+          display: flex;
+          position: relative;
+          padding: 0 8px 0 52px;
+          padding: 0 var(--spacing-1) 0 var(--spacing-6-5);
+          background: #fff;
+          background: var(--widget-background-color);
+          align-items: center;
+          width: 100%;
+          font-size: 16px;
+          font-size: var(--lg-font-size);
+          height: 52px;
+          height: var(--button-height);
+          border: 1px solid #c2c8d0;
+          border: var(--social-button-border);
+          border-radius: 3px;
+          border-radius: var(--border-radius-component);
+          color: #2d333a;
+          color: var(--font-default-color);
+          cursor: pointer;
+          outline: 0;
+          transition: box-shadow .15s ease-in-out, background-color .15s ease-in-out;
+          transition: box-shadow var(--transition-speed) var(--transition-easing), background-color var(--transition-speed) var(--transition-easing)
+        }
+        .ca9064714:focus {
+          box-shadow: 0 0 0 4px rgba(10, 132, 174, .14);
+          box-shadow: 0 0 0 4px var(--focus-border-color)
+        }
+        .ca9064714:hover {
+          background-color: #f1f2f3;
+          background-color: var(--gray-lightest)
+        }
+        .ca9064714:active {
+          background-color: #dee2e6;
+          background-color: var(--gray-light)
+        }
+        .c4c0df5fc {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          position: relative;
+          background-size: contain;
+          background-repeat: no-repeat;
+          background-position: 50%
+        }
+        .ca9064714 .c4c0df5fc {
+          position: absolute;
+          left: 26px;
+          left: calc(var(--spacing-6-5)/2);
+          top: 50%;
+          -webkit-transform: translateX(-50%) translateY(-50%);
+          transform: translateX(-50%) translateY(-50%)
+        }
+        .ca9064714 .c87998dbe {
+          text-align: left
+        }
+
+        .c4c0df5fc[data-provider^=google] {
+          background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' viewBox='0 0 48 48'%3E%3Cdefs%3E%3Cpath id='a' d='M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z'/%3E%3C/defs%3E%3CclipPath id='b'%3E%3Cuse xlink:href='%23a' overflow='visible'/%3E%3C/clipPath%3E%3Cpath clip-path='url(%23b)' fill='%23FBBC05' d='M0 37V11l17 13z'/%3E%3Cpath clip-path='url(%23b)' fill='%23EA4335' d='M0 11l17 13 7-6.1L48 14V0H0z'/%3E%3Cpath clip-path='url(%23b)' fill='%2334A853' d='M0 37l30-23 7.9 1L48 0v48H0z'/%3E%3Cpath clip-path='url(%23b)' fill='%234285F4' d='M48 48L17 24l-4-3 35-10z'/%3E%3C/svg%3E")
+        }
+        .c4c0df5fc[data-provider^=facebook] {
+          background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='2500' height='2500' viewBox='0 0 266.893 266.895'%3E%3Cpath d='M252.164 266.895c8.134 0 14.729-6.596 14.729-14.73V14.73c0-8.137-6.596-14.73-14.729-14.73H14.73C6.593 0 0 6.594 0 14.73v237.434c0 8.135 6.593 14.73 14.73 14.73h237.434z' fill='%23485a96'/%3E%3Cpath d='M184.152 266.895V163.539h34.692l5.194-40.28h-39.887V97.542c0-11.662 3.238-19.609 19.962-19.609l21.329-.01V41.897c-3.689-.49-16.351-1.587-31.08-1.587-30.753 0-51.807 18.771-51.807 53.244v29.705h-34.781v40.28h34.781v103.355h41.597z' fill='%23fff'/%3E%3C/svg%3E")
+        }
+
+        .ca9064714 .c87998dbe {
+          text-align: left
+        }
+`;
+      
+      // customize logo image
+      logoImage.src = config.icon;
+
+      // customize title
+      // TODO: Ideally make title dynamically driven (but not from app name in Auth0)
+      const title = 'Welcome!'; // config.dict.signin.title;
+      headTitle.innerText = title;
+      bodyTitle.innerText = title;
+      logoImage.alt = title;        
+
+      // Auth0.js initialization
+      const webAuth = new auth0.WebAuth(Object.assign({
+        /* additional configuration needed for use of custom domains
+        overrides: {
+          __tenant: config.auth0Tenant,
+          __token_issuer: 'YOUR_CUSTOM_DOMAIN'
+        }, */
+        domain: config.auth0Domain,
+        clientID: config.clientID,
+        redirectUri: config.callbackURL,
+        responseType: 'code'
+      }, config.internalOptions));        
+
+      // helper functions
+
+      function show(element) {
+        element.style.display = 'block';
+      }
+
+      function hide(element) {
+        element.style.display = 'none';
+      }
+
+      function setMessage(message) {
+        messageParagraph.innerText = message;
+      }
+
+      function displayError(inputContainer, err) {
+        // apply error styles to input container
+        inputContainer.classList.add('error');
+        inputContainer.classList.add('_error');
+        const inputField = inputContainer.getElementsByClassName('input')[0];
+        inputField.classList.add('input-error');
+        inputField.classList.add('_input-error');
+
+        // access or create error message container
+        let errorMessageContainer = document.getElementById('error-message-container');
+        if (!errorMessageContainer) {
+          errorMessageContainer = document.createElement('div');
+          errorMessageContainer.setAttribute('id', 'error-message-container');
+          errorMessageContainer.classList.add('ulp-popover', '_popover', 'error', '_error');
+          errorMessageContainer.innerHTML = `
+            <div class="fieldset-error no-list">
+              <ul class="fieldset-error-list">
+                  <li class="fieldset-error-list-item"></li>
+              </ul>
+            </div>`;
+          inputContainer.insertAdjacentElement('afterend', errorMessageContainer);
+        }
+
+        // render error message
+        const errorMessageListItem = errorMessageContainer.getElementsByClassName('fieldset-error-list-item')[0];
+        errorMessageListItem.innerText = err.message || err.description || err;
+      }
+
+      function hideError(inputContainer) {
+        // reset styles of input container
+        inputContainer.classList.remove('error');
+        inputContainer.classList.remove('_error');
+        const inputField = inputContainer.getElementsByClassName('input')[0];
+        inputField.classList.remove('input-error');
+        inputField.classList.remove('_input-error');
+        inputField.focus();
+
+        // remove error message container
+        const errorMessageContainer = document.getElementById('error-message-container');
+        if (errorMessageContainer) {
+          errorMessageContainer.parentNode.removeChild(errorMessageContainer);
+        }
+      }
+
+      function isPhoneNumber(value) {
+        return value.startsWith('+');
+      }
+
+      // flow functions
+
+      function promptForPhoneNumber() {
+        setMessage(`Please start by entering your mobile number.`);
+
+        show(phoneNumberGroup);
+        hide(otpGroup);
+        hide(emailGroup);
+        show(socialGroup);
+
+        phoneNumberField.focus();
+        phoneNumberField.select();
+      }
+
+      function onEmailInsteadLink(event) {
+        event.preventDefault();
+
+        hide(socialGroup);
+
+        promptForEmail();
+      }
+
+      function onPhoneNumberSubmit(event) {
+        event.preventDefault();
+
+        hideError(phoneNumberInputContainer);
+
+        hide(socialGroup);
+
+        // start passwordless authentication
+        const phoneNumber = `+1${phoneNumberField.value}`;
+        webAuth.passwordlessStart({
+          connection: 'sms',
+          send: 'code',
+          phoneNumber
+        }, (err, res) => {
+          if (err) {
+            return displayError(phoneNumberInputContainer, err);
+          }
+
+          console.log('res:', res);
+          promptForOtp(phoneNumber);
+        });
+      }
+
+      function promptForEmail() {
+        setMessage("Please enter your email address and password.");
+
+        hide(phoneNumberGroup);
+        hide(otpGroup);
+        show(emailGroup);
+
+        usernameField.focus();
+        usernameField.select();
+      }
+
+      function onPhoneInsteadLink(event) {
+        event.preventDefault();
+
+        promptForPhoneNumber();
+      }
+      
+      function onEmailPasswordSubmit(event) {
+        event.preventDefault();
+
+        hideError(passwordInputContainer);
+
+        // un/pw authentication
+        const username = usernameField.value;
+        const password = passwordField.value;
+        webAuth.login({
+          realm: 'api-customers',
+          username,
+          password
+        }, function(err) {
+          if (err) {
+            return displayError(passwordInputContainer, err);
+          }
+        });
+      }
+
+      function promptForOtp(phoneNumberOrEmail) {
+        setMessage("We've sent a code to:");
+        toPhoneOrEmailField.innerText = phoneNumberOrEmail;
+
+        hide(phoneNumberGroup);
+        show(otpGroup);
+        hide(emailGroup);
+
+        otpField.focus();
+      }
+
+      function onOtpSubmit(event) {
+        event.preventDefault();
+
+        hideError(otpInputContainer);
+
+        // complete passwordless authentication
+        const verificationCode = otpField.value;
+        const phoneNumberOrEmail = toPhoneOrEmailField.innerText;
+        const options = { verificationCode };
+        if (isPhoneNumber(phoneNumberOrEmail)) {
+          options.connection = 'sms';
+          options.phoneNumber = phoneNumberOrEmail;
+        } else {
+          options.connection = 'email';
+          options.email = phoneNumberOrEmail;
+        }
+
+        webAuth.passwordlessLogin(options, (err, res) => {
+          if (err) {
+            return displayError(otpInputContainer, err);
+          }
+
+          console.log('res:', res);
+        });
+      }
+
+      function onGoogleSubmit(event) {
+        event.preventDefault();
+
+        hideError(otpInputContainer);
+
+        // google authentication
+        webAuth.authorize({
+          connection: 'google-oauth2',
+          protocol: config.extraParams.protocol
+        }, function(err) {
+          if (err) {
+            return alert(err.message || err.description || err);
+          }
+        });
+      }
+
+      function onFacebookSubmit(event) {
+        event.preventDefault();
+
+        hideError(otpInputContainer);
+
+        // facebook authentication
+        webAuth.authorize({
+          connection: 'facebook',
+          protocol: config.extraParams.protocol
+        }, function(err) {
+          if (err) {
+            return alert(err.message || err.description || err);
+          }
+        });
+      }
+
+      // wire up events 
+      phoneNumberSubmit.addEventListener('click', onPhoneNumberSubmit);
+      phoneNumberForm.addEventListener('submit', event => {
+        event.preventDefault();
+        phoneNumberSubmit.click();  
+      });
+      emailInsteadLink.addEventListener('click', onEmailInsteadLink)
+
+      emailSubmit.addEventListener('click', onEmailPasswordSubmit);
+      emailForm.addEventListener('submit', event => {
+        event.preventDefault();
+        emailSubmit.click();  
+      });
+      phoneInsteadLink.addEventListener('click', onPhoneInsteadLink);
+
+      editPhoneOrEmailLink.addEventListener('click', () => {
+        const phoneNumberOrEmail = toPhoneOrEmailField.innerText;
+        if (isPhoneNumber(phoneNumberOrEmail)) {
+          promptForPhoneNumber();
+        } else {
+          promptForEmail();
+        }
+      });
+      otpSubmit.addEventListener('click', onOtpSubmit);
+      otpForm.addEventListener('submit', event => {
+        event.preventDefault();
+        otpSubmit.click();  
+      });
+
+      googleSubmit.addEventListener('click', onGoogleSubmit);
+      googleForm.addEventListener('submit', event => {
+        event.preventDefault();
+        googleSubmit.click();  
+      });
+
+      facebookSubmit.addEventListener('click', onFacebookSubmit);
+      facebookForm.addEventListener('submit', event => {
+        event.preventDefault();
+        facebookSubmit.click();  
+      });
+
+      //init flow
+      promptForPhoneNumber();
+
+    </script>
+  </body>
+</html>

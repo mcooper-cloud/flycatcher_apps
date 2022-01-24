@@ -1,0 +1,90 @@
+{% extends "dash/dashboard.html" %}
+
+{% block main_content %}
+    <h2>Dashboard</h2>
+    <table class="table-responsive table-striped table-sm">
+        <thead>
+            <tr>
+                <th>Key</th>
+                <th>Value</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th scope="row" class="profile-key">Name</th>
+                <td class="profile-value">{{ session.jwt_payload.name }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Nickname</th>
+                <td class="profile-value">{{ session.jwt_payload.nickname }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Email</th>
+                <td class="profile-value">{{ session.jwt_payload.email }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Email Verified</th>
+                <td class="profile-value">{{ session.jwt_payload.email_verified }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Subclaim</th>
+                <td class="profile-value">{{ session.jwt_payload.sub }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Access Token</th>
+                <td class="profile-value">
+                    <div class="jwt">
+                        <a target="_blank" href="https://jwt.io/#token={{ session.token.access_token }}">
+                            Decode Access Token
+                        </a>
+                    </div>
+                    {{ session.token.access_token }}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">ID Token</th>
+                <td class="profile-value">
+                    <div class="jwt">
+                        <a target="_blank" href="https://jwt.io/#token={{ session.token.id_token }}">
+                            Decode ID Token
+                        </a>
+                    </div>
+                    {{ session.token.id_token }}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Expires In</th>
+                <td class="profile-value">{{ session.token.expires_in }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Expires At</th>
+                <td class="profile-value">{{ session.token.expires_at }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Scope</th>
+                <td class="profile-value">{{ session.token.scope }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="profile-key">Token Type</th>
+                <td class="profile-value">{{ session.token.token_type }}</td>
+            </tr>
+            {% if data is defined %}
+                {% if 'custom_claims' in data %}
+                    <tr>
+                        <th scope="row" class="profile-key">Custom Claims</th>
+                        <td class="profile-value">
+                            <ul class="custom_claims">
+                                {% for claim in data['custom_claims'] %}
+                                    <li class="custom_claims">
+                                        <span class="label">{{ claim }}</span> == 
+                                        <span class="value">{{ data['custom_claims'][claim] }}</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endif %}
+        </tbody>
+    </table>
+{% endblock %}

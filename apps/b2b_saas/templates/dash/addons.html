@@ -1,0 +1,77 @@
+{% extends "dash/dashboard.html" %}
+
+{% block main_content %}
+    {% if data is defined %}
+        {% if 'org_metadata' in data %}
+
+<h2>Add Ons</h2>
+<div class="row dashboard-row">
+    <div class="col-sm-4 dashboard-grid">
+        <div class="dashboard-card">
+            {% if data.is_org_admin %}
+                <a href="/dashboard/addons/teams_addon" class="dashboard-option">
+                    <img class="dashboard-icon" src="https://openmoji.org/data/color/svg/E249.svg" alt="Team Suite">
+                    <div class="link-label">Team Suite</div>
+                </a>
+            {% else %}
+                <img class="dashboard-icon" src="https://openmoji.org/data/color/svg/E249.svg" alt="Team Suite">
+                <div class="link-label">Team Suite</div>
+            {% endif %}
+
+            {% if 'teams_addon' in data.org_metadata and data.org_metadata.teams_addon == 'true' %}
+                <div class="subscribed">Subscribed</div>
+            {% elif data.is_org_admin %}
+                <a class="btn btn-primary signup" href="/dashboard/addons/teams_addon">Subscribe</a>
+            {% else %}
+                <div class="unsubscribed">Not Subscribed</div>            
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-sm-4 dashboard-grid">
+        <div class="dashboard-card">
+            {% if data.is_org_admin %}
+                <a href="/dashboard/addons/security_addon" class="dashboard-option">
+                    <img class="dashboard-icon" src="https://openmoji.org/data/color/svg/1F6E1.svg" alt="Security Suite">
+                    <div class="link-label">Security Suite</div>
+                </a>
+            {% else %}
+                <img class="dashboard-icon" src="https://openmoji.org/data/color/svg/1F6E1.svg" alt="Security Suite">
+                <div class="link-label">Security Suite</div>
+            {% endif %}
+
+            {% if 'security_addon' in data.org_metadata and data.org_metadata.security_addon == 'true' %}
+                <div class="subscribed">Subscribed</div>
+            {% elif data.is_org_admin %}
+                <a class="btn btn-primary signup" href="/dashboard/addons/security_addon">Subscribe</a>
+            {% else %}
+                <div class="unsubscribed">Not Subscribed</div>            
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-sm-4 dashboard-grid">
+        <div class="dashboard-card">
+            {% if data.is_org_admin %}
+                <a href="/dashboard/addons/campaigns_addon" class="dashboard-option">
+                    <img class="dashboard-icon" src="https://openmoji.org/data/color/svg/1F3AF.svg" alt="Campaign Management">
+                    <div class="link-label">Campaigns</div>
+                </a>
+            {% else %}
+                <img class="dashboard-icon" src="https://openmoji.org/data/color/svg/1F3AF.svg" alt="Campaign Management">
+                <div class="link-label">Campaigns</div>
+            {% endif %}
+
+            {% if 'campaigns_addon' in data.org_metadata and data.org_metadata.campaigns_addon == 'true' %}
+                <div class="subscribed">Subscribed</div>
+            {% elif data.is_org_admin %}
+                <a class="btn btn-primary signup" href="/dashboard/addons/campaigns_addon">Subscribe</a>
+            {% else %}
+                <div class="unsubscribed">Not Subscribed</div>            
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+        {% endif %}
+    {% endif %}
+{% endblock %}

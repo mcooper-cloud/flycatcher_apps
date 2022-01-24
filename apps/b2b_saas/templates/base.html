@@ -1,0 +1,127 @@
+<html>
+    <head>
+        {% block head %}
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+        <!-- font awesome from BootstrapCDN -->
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+        <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
+        <title>Welcome to HyperUnicorn</title>
+        <link rel="icon" type="image/svg+xml" href="https://openmoji.org/data/color/svg/1F984.svg">
+        {% endblock %}
+    </head>
+    <body class="home">
+        <div class="container-fluid wrapper">
+            {% block navbar %}
+            <nav class="navbar navbar-expand-md navbar-light header-content">
+                <a href="/" class="navbar-brand">
+                    <img src="https://openmoji.org/data/color/svg/1F984.svg" height="36" alt="HyperUnicorn">
+                    HyperUnicorn
+                </a>
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <div class="navbar-nav">
+                        <a href="/pricing" class="nav-item nav-link active">Pricing</a>
+                        <a href="/docs" class="nav-item nav-link">Docs</a>
+                        <a href="/support" class="nav-item nav-link">Support</a>
+                        <a href="/dashboard" class="nav-item nav-link">Dashboard</a>
+                    </div>
+                    <div class="navbar-nav ml-auto">
+                        {% if session.token is defined %}
+                            <a class="btn btn-secondary logout" href="/logout">Logout</a>
+                        {% else %}
+                            <!--<a class="btn btn-primary signup" href="/signup">Sign Up</a>-->
+                            <a class="btn btn-secondary login" href="/login">Login</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </nav>
+            {% endblock %}
+            <div class="row feature">
+
+                {% block main_content %}
+                <div class="col-sm-8 main-content">
+                    <h1>Modern Application Deployment</h1>
+                    <h3>
+                        <!--<span class="elevate">-->
+                            Deploy  
+                            <i class="bi-arrow-bar-right"></i>  Connect
+                            <i class="bi-arrow-bar-right"></i>  Analyze
+                        <!--</span>-->
+                    </h3>
+                </div>
+                <div class="col-sm-4">
+                    <!--Column right with nested rows and columns-->
+                    <div class="row sidebar-content">
+                        <i class="bi-shield-check">  Secure by Design</i>
+                    </div>
+                    <div class="row sidebar-content">
+                        <i class="bi-code-square">  Infrastructure as Code</i>
+                    </div>
+                    <div class="row sidebar-content">
+                        <i class="bi-bug">  Bug Free</i>
+                    </div>
+                </div>
+                {% endblock %}
+
+            </div>
+            <div class="row tier-content">
+
+                {% block tier_option %}
+                <div class="col-sm-4 tier-option">
+                    <h3>Small Business</h3>
+                    <h1>$25/mo</h1>
+                    <a class="btn btn-primary signup" href="/signup?tier=smb">Sign Up</A>
+                    <div class="feature-set">
+                        <p><i class="bi-check2-circle"></i>    Core Set of Features</p>
+                        <p><i class="bi-check2-circle"></i>    Email & Community Support</p>
+                    </div>
+                </div>
+                <div class="col-sm-4 tier-option">
+                    <h3>Enterprise</h3>
+                    <h1>$500/mo</h1>
+                    <a class="btn btn-primary signup" href="/signup?tier=ent">Sign Up</a>
+                    <div class="feature-set">
+                        <p><i class="bi-check2-circle"></i>    Core Set of Features</p>
+                        <p><i class="bi-check2-circle"></i>    Bring Your Own ID (BYOID)</p>
+                        <p><i class="bi-check2-circle"></i>    Enterprise Support Center</p>
+                    </div>
+                </div>
+                <div class="col-sm-4 tier-option">
+                    <h3>Enterprise Plus</h3>
+                    <h1>$2500/mo</h1>
+                    <a class="btn btn-primary signup" href="/signup?tier=ent_plus">Sign Up</a>
+                    <div class="feature-set">
+                        <p><i class="bi-check2-circle"></i>    Core Set of Features</p>
+                        <p><i class="bi-check2-circle"></i>    Bring Your Own ID (BYOID)</p>
+                        <p><i class="bi-check2-circle"></i>    Enterprise Support Center</p>
+                        <p><i class="bi-check2-circle"></i>    Sev1 15 Minute Incident Response</p>
+                    </div>
+                </div>
+                {% endblock %}
+
+            </div>
+
+            {% block footer %}
+            <div class="row footer-content">
+                <nav class="navbar navbar-expand-md navbar-light footer-content">
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <div class="navbar-nav">
+                            <a href="/pricing" class="nav-item nav-link active">Pricing</a>
+                            <a href="/docs" class="nav-item nav-link">Docs</a>
+                            <a href="/support" class="nav-item nav-link">Support</a>
+                            <a href="/about" class="nav-item nav-link active">About</a>
+                            <a href="/tac" class="nav-item nav-link">Terms & Conditions</a>
+                            <a href="/contact" class="nav-item nav-link">Contact Sales</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+            {% endblock %}
+        </div>
+    </body>
+</html>
