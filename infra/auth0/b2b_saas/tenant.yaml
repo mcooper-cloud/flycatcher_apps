@@ -29,7 +29,7 @@ resourceServers:
       - value: "delete:subscription"
         description: "Delete subscriptions"
 roles:
-  - name: '##PROJECT_NAME##-##ENVIRONMENT##-OrgAdmin'
+  - name: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-OrgAdmin'
     description: '##PROJECT_NAME## ##ENVIRONMENT## Organization Admin'    
     permissions:
       - permission_name: "create:invitation"
@@ -48,7 +48,7 @@ roles:
         resource_server_identifier: '##AUTH0_API_AUDIENCE##'
       - permission_name: "delete:subscription"
         resource_server_identifier: '##AUTH0_API_AUDIENCE##'
-  - name: '##PROJECT_NAME##-##ENVIRONMENT##-OrgMember'
+  - name: '##PROJECT_NAME##-##ENVIRONMENT##-##SYSTEM_NUMBER##-OrgMember'
     description: '##PROJECT_NAME## ##ENVIRONMENT## Organization Member'
     permissions:
       - permission_name: "read:invitation"

@@ -67,10 +67,10 @@ JWT_PAYLOAD_KEY = 'jwt_payload'
 
 SECRET_KEY = env.get('APP_SESSION_SECRET')
 
-CONNECTION_NAME = '{}-{}-customers'.format(PROJECT_NAME, ENVIRONMENT_NAME)
+CONNECTION_NAME = '{}-{}-{}-customers'.format(PROJECT_NAME, ENVIRONMENT_NAME, SYSTEM_NUMBER)
 
-org_admin_role = '{}-{}-OrgAdmin'.format(PROJECT_NAME, ENVIRONMENT_NAME)
-org_member_role = '{}-{}-OrgMember'.format(PROJECT_NAME, ENVIRONMENT_NAME)
+org_admin_role = '{}-{}-{}-OrgAdmin'.format(PROJECT_NAME, ENVIRONMENT_NAME, SYSTEM_NUMBER)
+org_member_role = '{}-{}-{}-OrgMember'.format(PROJECT_NAME, ENVIRONMENT_NAME, SYSTEM_NUMBER)
 
 
 ROLE_LIST = [
