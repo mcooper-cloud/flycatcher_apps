@@ -22,10 +22,15 @@
             "Description": "Logo URL",
             "Default": "USER_INPUT_REQUIRED"
         },
-        "Auth0Domain": {
+        "Auth0AuthDomain": {
             "Type": "String",
-            "Description": "Auth0 Tenant Domain",
-            "Default": "example.auth0.com"
+            "Description": "Auth0 Tenant Auth Domain",
+            "Default": "example.us.auth0.com"
+        },
+        "Auth0MGMTDomain": {
+            "Type": "String",
+            "Description": "Auth0 Tenant MGMT Domain",
+            "Default": "example.us.auth0.com"
         },
         "Auth0IssuerBaseURL": {
             "Type": "String",
@@ -684,8 +689,12 @@
                                 ]]}
                             },
                             {
-                                "Name": "AUTH0_DOMAIN",
-                                "Value": {"Ref" : "Auth0Domain"}
+                                "Name": "AUTH0_AUTH_DOMAIN",
+                                "Value": {"Ref" : "Auth0AuthDomain"}
+                            },
+                            {
+                                "Name": "AUTH0_MGMT_DOMAIN",
+                                "Value": {"Ref" : "Auth0MGMTDomain"}
                             },
                             {
                                 "Name": "AUTH0_ISSUER_BASE_URL",

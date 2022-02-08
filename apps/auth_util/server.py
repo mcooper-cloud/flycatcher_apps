@@ -48,8 +48,11 @@ from forms import LoginForm
 AUTH0_CALLBACK_URL = env.get('AUTH0_CALLBACK_URL')
 AUTH0_CLIENT_ID = env.get('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = env.get('AUTH0_CLIENT_SECRET')
-AUTH0_DOMAIN = env.get('AUTH0_DOMAIN')
-AUTH0_BASE_URL = 'https://{}'.format(AUTH0_DOMAIN)
+
+AUTH0_AUTH_DOMAIN = env.get('AUTH0_AUTH_DOMAIN')
+AUTH0_MGMT_DOMAIN = env.get('AUTH0_MGMT_DOMAIN')
+
+AUTH0_BASE_URL = 'https://{}'.format(AUTH0_MGMT_DOMAIN)
 AUTH0_AUDIENCE = env.get('AUTH0_AUDIENCE')
 
 ENVIRONMENT_NAME = env.get('ENVIRONMENT_NAME')
@@ -101,7 +104,7 @@ auth0 = oauth.register(
 
 auth0_mgmt = Auth0( client_id=AUTH0_CLIENT_ID,
                     client_secret=AUTH0_CLIENT_SECRET,
-                    auth0_domain=AUTH0_DOMAIN )
+                    auth0_domain=AUTH0_MGMT_DOMAIN )
 
 
 ##############################################################################
@@ -245,6 +248,7 @@ def home():
             if form.screen_hint.data:
                 parameter_list.append('screen_hint={}'.format(form.screen_hint.data))
 
+            '''
             #**
             #** Audience
             #**
@@ -253,6 +257,7 @@ def home():
 
             else:
                 parameter_list.append('audience={}'.format(AUTH0_AUDIENCE))
+            '''
 
             #**
             #** Scope
@@ -368,7 +373,7 @@ def login():
     invitation = request.args.get('invitation')
     connection = request.args.get('connection')
     callback_uri = request.args.get('callback_uri')
-    audience = request.args.get('audience')
+#    audience = request.args.get('audience')
     scope = request.args.get('scope')
 
 
@@ -383,7 +388,11 @@ def login():
     if callback_uri is not None:
         REDIRECT_URI = '{}?callback_uri={}'.format(REDIRECT_URI, callback_uri)
 
-
+    '''
+    if audience is not None:
+        AUTH0_AUDIENCE = audience
+    '''
+    
     return auth0.authorize_redirect( redirect_uri=REDIRECT_URI, 
                                      audience=AUTH0_AUDIENCE, 
                                      screen_hint=SCREEN_HINT,
@@ -424,7 +433,7 @@ def dashboard():
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-        auth0_domain=AUTH0_DOMAIN
+        auth0_domain=AUTH0_AUTH_DOMAIN
     )
 
     return render_template( 

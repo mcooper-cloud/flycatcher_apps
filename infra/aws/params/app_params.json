@@ -16,8 +16,12 @@
         "ParameterValue" : "{{ LogoURL }}"
     },
     {
-        "ParameterKey" : "Auth0Domain",
-        "ParameterValue" : "{{ Auth0Domain }}"
+        "ParameterKey" : "Auth0AuthDomain",
+        "ParameterValue" : "{{ Auth0AuthDomain }}"
+    },
+    {
+        "ParameterKey" : "Auth0MGMTDomain",
+        "ParameterValue" : "{{ Auth0MGMTDomain }}"
     },
     {
         "ParameterKey" : "Auth0IssuerBaseURL",
