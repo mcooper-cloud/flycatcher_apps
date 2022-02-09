@@ -53,6 +53,7 @@ AUTH0_AUTH_DOMAIN = env.get('AUTH0_AUTH_DOMAIN')
 AUTH0_MGMT_DOMAIN = env.get('AUTH0_MGMT_DOMAIN')
 
 AUTH0_BASE_URL = 'https://{}'.format(AUTH0_MGMT_DOMAIN)
+AUTH0_AUTH_URL = 'https://{}'.format(AUTH0_AUTH_DOMAIN)
 AUTH0_AUDIENCE = env.get('AUTH0_AUDIENCE')
 
 ENVIRONMENT_NAME = env.get('ENVIRONMENT_NAME')
@@ -96,7 +97,7 @@ auth0 = oauth.register(
     client_secret=AUTH0_CLIENT_SECRET,
     api_base_url=AUTH0_BASE_URL,
     access_token_url='{}/oauth/token'.format(AUTH0_BASE_URL),
-    authorize_url='{}/authorize'.format(AUTH0_BASE_URL),
+    authorize_url='{}/authorize'.format(AUTH0_AUTH_URL),
     client_kwargs={
         'scope': 'openid profile email',
     },
@@ -218,7 +219,7 @@ def home():
 
             app_login_url = url_for('login')
 
-            auth0_login_url = '{}/authorize'.format(AUTH0_BASE_URL)
+            auth0_login_url = '{}/authorize'.format(AUTH0_AUTH_URL)
             auth0_login_url = '{}?response_type=code'.format(auth0_login_url)
 
             parameter_list = []
