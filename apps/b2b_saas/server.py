@@ -52,8 +52,15 @@ from forms import SignupForm, CreateConnectionForm, CreateInviteForm
 AUTH0_CALLBACK_URL = env.get('AUTH0_CALLBACK_URL')
 AUTH0_CLIENT_ID = env.get('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = env.get('AUTH0_CLIENT_SECRET')
-AUTH0_DOMAIN = env.get('AUTH0_DOMAIN')
-AUTH0_BASE_URL = 'https://{}'.format(AUTH0_DOMAIN)
+#AUTH0_DOMAIN = env.get('AUTH0_DOMAIN')
+AUTH0_AUTH_DOMAIN = env.get('AUTH0_AUTH_DOMAIN')
+AUTH0_AUTH_DOMAIN = env.get('AUTH0_MGMT_DOMAIN')
+
+#AUTH0_BASE_URL = 'https://{}'.format(AUTH0_DOMAIN)
+
+AUTH0_BASE_URL = 'https://{}'.format(AUTH0_MGMT_DOMAIN)
+AUTH0_AUTH_URL = 'https://{}'.format(AUTH0_AUTH_DOMAIN)
+
 AUTH0_AUDIENCE = env.get('AUTH0_AUDIENCE')
 
 ENVIRONMENT_NAME = env.get('ENVIRONMENT_NAME')
@@ -121,6 +128,7 @@ def handle_auth_error(ex):
 
 oauth = OAuth(app)
 
+'''
 auth0 = oauth.register(
     'auth0',
     client_id=AUTH0_CLIENT_ID,
@@ -136,6 +144,24 @@ auth0 = oauth.register(
 auth0_mgmt = Auth0( client_id=AUTH0_CLIENT_ID,
                     client_secret=AUTH0_CLIENT_SECRET,
                     auth0_domain=AUTH0_DOMAIN )
+'''
+
+auth0 = oauth.register(
+    'auth0',
+    client_id=AUTH0_CLIENT_ID,
+    client_secret=AUTH0_CLIENT_SECRET,
+    api_base_url=AUTH0_BASE_URL,
+    access_token_url='{}/oauth/token'.format(AUTH0_BASE_URL),
+    authorize_url='{}/authorize'.format(AUTH0_AUTH_URL),
+    client_kwargs={
+        'scope': 'openid profile email',
+    },
+)
+
+auth0_mgmt = Auth0( client_id=AUTH0_CLIENT_ID,
+                    client_secret=AUTH0_CLIENT_SECRET,
+                    auth0_domain=AUTH0_MGMT_DOMAIN )
+
 
 conn_data = auth0_mgmt.get_connection(name=CONNECTION_NAME)
 conn_id = conn_data[0]['id']
@@ -180,7 +206,8 @@ def requires_org_admin(f):
             data = get_token_data(
                 token=session['token']['access_token'], 
                 audience=AUTH0_AUDIENCE, 
-                auth0_domain=AUTH0_DOMAIN,
+#                auth0_domain=AUTH0_DOMAIN,
+                auth0_domain=AUTH0_AUTH_DOMAIN,
                 claims_list=custom_claims
             )
 
@@ -391,7 +418,6 @@ def signup():
             ##
             ## create Auth0 Org and perform invite
             ##
-
 
             '''
             user = auth0_mgmt.get_user_by_email(email=email)
@@ -687,7 +713,8 @@ def profile_dashboard():
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-        auth0_domain=AUTH0_DOMAIN,
+#        auth0_domain=AUTH0_DOMAIN,
+        auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
@@ -715,7 +742,8 @@ def addons_dashboard():
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-        auth0_domain=AUTH0_DOMAIN,
+#        auth0_domain=AUTH0_DOMAIN,
+        auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
@@ -765,7 +793,8 @@ def addons_extended_dashboard(path):
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-        auth0_domain=AUTH0_DOMAIN,
+#        auth0_domain=AUTH0_DOMAIN,
+        auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
@@ -842,7 +871,8 @@ def create_connection():
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-        auth0_domain=AUTH0_DOMAIN,
+#        auth0_domain=AUTH0_DOMAIN,
+        auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
@@ -943,7 +973,8 @@ def create_invitation():
     token_data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-        auth0_domain=AUTH0_DOMAIN,
+#        auth0_domain=AUTH0_DOMAIN,
+        auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
