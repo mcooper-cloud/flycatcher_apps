@@ -32,6 +32,11 @@
             "Description": "Auth0 Tenant MGMT Domain",
             "Default": "example.us.auth0.com"
         },
+        "Auth0CustomCallbackURL": {
+            "Type": "String",
+            "Description": "Auth0 custom callback URL",
+            "Default": "NO_VALUE"
+        },
         "Auth0IssuerBaseURL": {
             "Type": "String",
             "Description": "Auth0 Issuer Base URL",
@@ -266,7 +271,13 @@
                     {"Fn::Equals": [{"Ref": "HostedZoneId"},""]}
                 ]}
             ]
-        }
+        },
+        "CustomCallbackURL" : {
+            "Fn::And" : [
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "Auth0CustomCallbackURL"},"NO_VALUE"]}]},
+                {"Fn::Not" : [{"Fn::Equals": [{"Ref": "Auth0CustomCallbackURL"},""]}]},
+            ]
+        },        
     },
     "Resources":{
         "VPC": {
@@ -706,22 +717,26 @@
                             },
                             {
                                 "Name": "AUTH0_CALLBACK_URL",
-                                "Value": { "Fn::Join":["",[
-                                    { "Fn::If" : [
-                                        "LoadBalancerProtocol",
-                                        "http://",
-                                        "https://"
-                                    ]},
-                                    { "Fn::If" : [
-                                        "IsEmptyDomain",
-                                        {"Fn::GetAtt":["ECSALB","DNSName"]},
-                                        { "Fn::Join":[".", [
-                                            {"Ref": "AppSubDomain"}, 
-                                            {"Ref": "Domain"}
-                                        ]]}
-                                    ]},
-                                    "/callback"
-                                ]]}
+                                "Value": { "Fn::If" : [
+                                    "CustomCallbackURL",
+                                    {"Ref": "Auth0CustomCallbackURL"},
+                                    { "Fn::Join":["",[
+                                        { "Fn::If" : [
+                                            "LoadBalancerProtocol",
+                                            "http://",
+                                            "https://"
+                                        ]},
+                                        { "Fn::If" : [
+                                            "IsEmptyDomain",
+                                            {"Fn::GetAtt":["ECSALB","DNSName"]},
+                                            { "Fn::Join":[".", [
+                                                {"Ref": "AppSubDomain"}, 
+                                                {"Ref": "Domain"}
+                                            ]]}
+                                        ]},
+                                        "/callback"
+                                    ]]}
+                                ]},
                             },
                             {
                                 "Name": "LOAD_BALANCER_DNS",
@@ -1353,22 +1368,29 @@
         },
         "Auth0CallbackURL":{
             "Description":"Auth0 callback URL (for dynamic tenant configuration)",
-            "Value": { "Fn::Join":["",[
-                { "Fn::If" : [
-                    "LoadBalancerProtocol",
-                    "http://",
-                    "https://"
-                ]},
-                { "Fn::If" : [
-                    "IsEmptyDomain",
-                    {"Fn::GetAtt":["ECSALB","DNSName"]},
-                    { "Fn::Join":[".", [
-                        {"Ref": "AppSubDomain"}, 
-                        {"Ref": "Domain"}
+            "Value": {
+                "Name": "AUTH0_CALLBACK_URL",
+                "Value": { "Fn::If" : [
+                    "CustomCallbackURL",
+                    {"Ref": "Auth0CustomCallbackURL"},
+                    { "Fn::Join":["",[
+                        { "Fn::If" : [
+                            "LoadBalancerProtocol",
+                            "http://",
+                            "https://"
+                        ]},
+                        { "Fn::If" : [
+                            "IsEmptyDomain",
+                            {"Fn::GetAtt":["ECSALB","DNSName"]},
+                            { "Fn::Join":[".", [
+                                {"Ref": "AppSubDomain"}, 
+                                {"Ref": "Domain"}
+                            ]]}
+                        ]},
+                        "/callback"
                     ]]}
                 ]},
-                "/callback"
-            ]]}
+            }
         },
         "Auth0LogoutURL":{
             "Description":"Auth0 logout URL (for dynamic tenant configuration)",
