@@ -415,7 +415,8 @@ def login():
 def logout():
     session.clear()
     params = {'returnTo': url_for('home', _external=True), 'client_id': AUTH0_CLIENT_ID}
-    return redirect('{}/v2/logout?{}'.format(auth0.api_base_url, urlencode(params)))
+#    return redirect('{}/v2/logout?{}'.format(auth0.api_base_url, urlencode(params)))
+    return redirect('{}/v2/logout?{}'.format(AUTH0_AUTH_URL, urlencode(params)))
 
 
 ##############################################################################
