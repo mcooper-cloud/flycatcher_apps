@@ -1368,29 +1368,26 @@
         },
         "Auth0CallbackURL":{
             "Description":"Auth0 callback URL (for dynamic tenant configuration)",
-            "Value": {
-                "Name": "AUTH0_CALLBACK_URL",
-                "Value": { "Fn::If" : [
-                    "CustomCallbackURL",
-                    {"Ref": "Auth0CustomCallbackURL"},
-                    { "Fn::Join":["",[
-                        { "Fn::If" : [
-                            "LoadBalancerProtocol",
-                            "http://",
-                            "https://"
-                        ]},
-                        { "Fn::If" : [
-                            "IsEmptyDomain",
-                            {"Fn::GetAtt":["ECSALB","DNSName"]},
-                            { "Fn::Join":[".", [
-                                {"Ref": "AppSubDomain"}, 
-                                {"Ref": "Domain"}
-                            ]]}
-                        ]},
-                        "/callback"
-                    ]]}
-                ]},
-            }
+            "Value": { "Fn::If" : [
+                "CustomCallbackURL",
+                {"Ref": "Auth0CustomCallbackURL"},
+                { "Fn::Join":["",[
+                    { "Fn::If" : [
+                        "LoadBalancerProtocol",
+                        "http://",
+                        "https://"
+                    ]},
+                    { "Fn::If" : [
+                        "IsEmptyDomain",
+                        {"Fn::GetAtt":["ECSALB","DNSName"]},
+                        { "Fn::Join":[".", [
+                            {"Ref": "AppSubDomain"}, 
+                            {"Ref": "Domain"}
+                        ]]}
+                    ]},
+                    "/callback"
+                ]]}
+            ]}
         },
         "Auth0LogoutURL":{
             "Description":"Auth0 logout URL (for dynamic tenant configuration)",
