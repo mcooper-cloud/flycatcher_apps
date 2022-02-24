@@ -24,6 +24,10 @@
         "ParameterValue" : "{{ Auth0MGMTDomain }}"
     },
     {
+        "ParameterKey" : "Auth0CustomCallbackURL",
+        "ParameterValue" : "{{ Auth0CustomCallbackURL }}"
+    },
+    {
         "ParameterKey" : "Auth0IssuerBaseURL",
         "ParameterValue" : "{{ Auth0IssuerBaseURL }}"
     },

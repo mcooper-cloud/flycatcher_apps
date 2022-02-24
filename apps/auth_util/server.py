@@ -67,6 +67,7 @@ JWT_PAYLOAD_KEY = 'jwt_payload'
 
 SECRET_KEY = env.get('APP_SESSION_SECRET')
 
+DEFAULT_SCOPE = 'openid profile email'
 
 ##############################################################################
 ##############################################################################
@@ -99,7 +100,8 @@ auth0 = oauth.register(
     access_token_url='{}/oauth/token'.format(AUTH0_BASE_URL),
     authorize_url='{}/authorize'.format(AUTH0_AUTH_URL),
     client_kwargs={
-        'scope': 'openid profile email',
+#        'scope': 'openid profile email',
+        'scope': DEFAULT_SCOPE
     },
 )
 
@@ -375,16 +377,20 @@ def login():
     connection = request.args.get('connection')
     callback_uri = request.args.get('callback_uri')
 #    audience = request.args.get('audience')
-    scope = request.args.get('scope')
+
+
+    if request.args.get('scope') is not None:
+        scope = request.args.get('scope')
+    else:
+        scope = DEFAULT_SCOPE
 
 
     SCREEN_HINT=None
     if screen_hint is not None:
-        SCREEN_HINT='signup'
+        SCREEN_HINT = screen_hint
 
 
     REDIRECT_URI = AUTH0_CALLBACK_URL
-
 
     if callback_uri is not None:
         REDIRECT_URI = '{}?callback_uri={}'.format(REDIRECT_URI, callback_uri)
