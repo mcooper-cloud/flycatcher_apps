@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export APP_PATH=/opt/local/apps/apache_mod_openicd/
+export APP_PATH=/opt/local/apps/apache_mod_openidc/
 export DEBIAN_FRONTEND="noninteractive"
 
 
