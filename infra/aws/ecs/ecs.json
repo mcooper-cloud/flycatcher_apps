@@ -700,6 +700,17 @@
                                 ]]}
                             },
                             {
+                                "Name": "WEB_APP_DOMAIN",
+                                "Value": { "Fn::If" : [
+                                    "IsEmptyDomain",
+                                    {"Fn::GetAtt":["ECSALB","DNSName"]},
+                                    { "Fn::Join":[".", [
+                                        {"Ref": "AppSubDomain"}, 
+                                        {"Ref": "Domain"}
+                                    ]]}
+                                ]},
+                            },
+                            {
                                 "Name": "AUTH0_AUTH_DOMAIN",
                                 "Value": {"Ref" : "Auth0AuthDomain"}
                             },
