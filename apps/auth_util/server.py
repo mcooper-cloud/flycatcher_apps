@@ -69,6 +69,18 @@ SECRET_KEY = env.get('APP_SESSION_SECRET')
 
 DEFAULT_SCOPE = 'openid profile email'
 
+
+endpoints = {
+    'authorize' : 'https://{}/authorize'.format(AUTH0_AUTH_DOMAIN),
+    'device_code' : 'https://{}/oauth/device/code'.format(AUTH0_AUTH_DOMAIN),
+    #'token' : '{}/oauth/token'.format(AUTH0_BASE_URL),
+    'token' : 'https://{}/oauth/token'.format(AUTH0_AUTH_DOMAIN),
+    'user_info' : 'https://{}/userinfo'.format(AUTH0_AUTH_DOMAIN),
+    'openidc_config' : 'https://{}/.well-known/openid-configuration'.format(AUTH0_AUTH_DOMAIN),
+    'jwks' : 'https://{}/.well-known/jwks.json'.format(AUTH0_AUTH_DOMAIN)
+}
+
+
 ##############################################################################
 ##############################################################################
 ##
@@ -92,6 +104,8 @@ def handle_auth_error(ex):
 
 oauth = OAuth(app)
 
+
+'''
 auth0 = oauth.register(
     'auth0',
     client_id=AUTH0_CLIENT_ID,
@@ -101,6 +115,20 @@ auth0 = oauth.register(
     authorize_url='{}/authorize'.format(AUTH0_AUTH_URL),
     client_kwargs={
 #        'scope': 'openid profile email',
+        'scope': DEFAULT_SCOPE
+    },
+)
+'''
+
+auth0 = oauth.register(
+    'auth0',
+    client_id=AUTH0_CLIENT_ID,
+    client_secret=AUTH0_CLIENT_SECRET,
+    api_base_url=AUTH0_BASE_URL,
+    access_token_url=endpoints['token'],
+    authorize_url=endpoints['authorize'],
+    server_metadata_url=endpoints['openidc_config'],
+    client_kwargs={
         'scope': DEFAULT_SCOPE
     },
 )
