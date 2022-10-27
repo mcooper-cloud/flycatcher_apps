@@ -34,11 +34,17 @@ from six.moves.urllib.parse import urlencode
 
 from flask_bootstrap import Bootstrap
 
-#import logging
-#logging.basicConfig(format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-
 from auth0 import Auth0, JWT
-from forms import SignupForm, CreateConnectionForm, CreateInviteForm
+from forms import SignupForm, CreateSAMLConnectionForm, CreateInviteForm
+
+
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M',
+                    filename='/var/log/server.log',
+                    filemode='w')
 
 ##############################################################################
 ##############################################################################
@@ -53,7 +59,11 @@ AUTH0_CALLBACK_URL = env.get('AUTH0_CALLBACK_URL')
 AUTH0_CLIENT_ID = env.get('AUTH0_CLIENT_ID')
 AUTH0_CLIENT_SECRET = env.get('AUTH0_CLIENT_SECRET')
 AUTH0_AUTH_DOMAIN = env.get('AUTH0_AUTH_DOMAIN')
-AUTH0_AUTH_DOMAIN = env.get('AUTH0_MGMT_DOMAIN')
+AUTH0_MGMT_DOMAIN = env.get('AUTH0_MGMT_DOMAIN')
+
+LOGO_URL = env.get('LOGO_URL')
+PAGE_BACKGROUND_COLOR = env.get('PAGE_BACKGROUND_COLOR')
+PRIMARY_COLOR = env.get('PRIMARY_COLOR')
 
 AUTH0_BASE_URL = 'https://{}'.format(AUTH0_MGMT_DOMAIN)
 AUTH0_AUTH_URL = 'https://{}'.format(AUTH0_AUTH_DOMAIN)
@@ -81,6 +91,10 @@ ROLE_LIST = [
     org_admin_role,
     org_member_role
 ]
+
+connection_strategies = {
+    'SAML' : 'samlp',
+}
 
 custom_claim_namespace = WEB_APP_HTTP_URL
 
@@ -136,40 +150,6 @@ def handle_auth_error(ex):
     return response
 
 oauth = OAuth(app)
-
-'''
-auth0 = oauth.register(
-    'auth0',
-    client_id=AUTH0_CLIENT_ID,
-    client_secret=AUTH0_CLIENT_SECRET,
-    api_base_url=AUTH0_BASE_URL,
-    access_token_url='{}/oauth/token'.format(AUTH0_BASE_URL),
-    authorize_url='{}/authorize'.format(AUTH0_BASE_URL),
-    client_kwargs={
-        'scope': 'openid profile email',
-    },
-)
-
-auth0_mgmt = Auth0( client_id=AUTH0_CLIENT_ID,
-                    client_secret=AUTH0_CLIENT_SECRET,
-                    auth0_domain=AUTH0_DOMAIN )
-
-
-
-
-auth0 = oauth.register(
-    'auth0',
-    client_id=AUTH0_CLIENT_ID,
-    client_secret=AUTH0_CLIENT_SECRET,
-    api_base_url=AUTH0_BASE_URL,
-    access_token_url='{}/oauth/token'.format(AUTH0_BASE_URL),
-    authorize_url='{}/authorize'.format(AUTH0_AUTH_URL),
-    client_kwargs={
-        'scope': 'openid profile email',
-    },
-)
-'''
-
 
 auth0 = oauth.register(
     'auth0',
@@ -232,7 +212,6 @@ def requires_org_admin(f):
             data = get_token_data(
                 token=session['token']['access_token'], 
                 audience=AUTH0_AUDIENCE, 
-#                auth0_domain=AUTH0_DOMAIN,
                 auth0_domain=AUTH0_AUTH_DOMAIN,
                 claims_list=custom_claims
             )
@@ -312,7 +291,6 @@ def get_token_data(token=None, audience=None, auth0_domain=None, claims_list=Non
         ##************************************************************************
         ##
 
-
         org_id = token_data.get_org_id()
 
         if org_id is not None:
@@ -331,7 +309,6 @@ def get_token_data(token=None, audience=None, auth0_domain=None, claims_list=Non
         if scope is not None:
             data['scope'] = scope
 
-
         return data
 
     else:
@@ -346,31 +323,29 @@ def get_token_data(token=None, audience=None, auth0_domain=None, claims_list=Non
 ##############################################################################
 ##############################################################################
 
-
-# Controllers API
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('home/home.html')
 
 @app.route('/pricing/')
 def pricing():
-    return render_template('pricing.html')
+    return render_template('home/pricing.html')
 
 @app.route('/docs/')
 def docs():
-    return render_template('docs.html')
+    return render_template('home/docs.html')
 
 @app.route('/about/')
 def about():
-    return render_template('about.html')
+    return render_template('home/about.html')
 
 @app.route('/tac/')
 def tac():
-    return render_template('tac.html')
+    return render_template('home/tac.html')
 
 @app.route('/contact/')
 def contact():
-    return render_template('contact.html')
+    return render_template('home/contact.html')
 
 
 ##############################################################################
@@ -426,8 +401,9 @@ def callback_handling():
 def signup():
 
     title_message = None
+    org_data = {}
 
-    tier = request.args.get('tier')
+    org_data['tier'] = request.args.get('tier')
 
     form = SignupForm()
 
@@ -437,9 +413,13 @@ def signup():
 
         if form.validate_on_submit():
 
-            organization = form.organization.data
-            email = form.email.data.lower()
+            org_data['name'] = form.organization.data
+            org_data['email'] = form.email.data.lower()
             title_message = 'Please check your inbox and confirm your email address'
+
+            org_data['logo_url'] = LOGO_URL
+            org_data['page_background_color'] = PAGE_BACKGROUND_COLOR
+            org_data['primary_color'] = PRIMARY_COLOR
 
             ##
             ## create Auth0 Org and perform invite
@@ -462,9 +442,9 @@ def signup():
                 return render_template('signup.html', data=data)
             '''
 
-            org_data = auth0_mgmt.create_organization(email=email, name=organization, tier=tier)
+            org_res_data = auth0_mgmt.create_organization(data=org_data)
 
-            org_id = org_data['id']
+            org_id = org_res_data['id']
             session['org_id'] = org_id
 
             ##
@@ -479,12 +459,12 @@ def signup():
             ##
             ## Add OrgAdmin role to invite
             ##
-            admin_role = '{}-{}-OrgAdmin'.format(PROJECT_NAME, ENVIRONMENT_NAME)
+            admin_role = '{}-{}-{}-OrgAdmin'.format(PROJECT_NAME, ENVIRONMENT_NAME, SYSTEM_NUMBER)
             role_id = role_id_list[admin_role]
 
             invite_data = {
-                'invitee' : {'email' : email}, 
-                'inviter' : {'name' : '{}-{}'.format(PROJECT_NAME, ENVIRONMENT_NAME)},
+                'invitee' : {'email' : org_data['email']}, 
+                'inviter' : {'name' : '{}-{}-{}'.format(PROJECT_NAME, ENVIRONMENT_NAME, SYSTEM_NUMBER)},
                 'app_metadata' : app_metadata,
                 'roles' : [role_id],
                 'client_id' : AUTH0_CLIENT_ID,
@@ -495,8 +475,8 @@ def signup():
 
             data = {
                 'title_message' : title_message,
-                'tier' : tier,
-                'org_id' : org_data['id']
+                'tier' : org_data['tier'],
+                'org_id' : org_id
             }
 
             ##
@@ -504,17 +484,17 @@ def signup():
             ##      - create database
             ##
 
-            return render_template('signup.html', data=data)
+            return render_template('home/signup.html', data=data)
 
         else:
             title_message = 'Form did not validate'
 
             data = {
                 'title_message' : title_message,
-                'tier' : tier,
+                'tier' : org_data['tier'],
             }
 
-            return render_template('signup.html', data=data)
+            return render_template('home/signup.html', data=data)
 
     else:
         ##
@@ -522,9 +502,9 @@ def signup():
         ##
         data = {
             'title_message' : title_message,
-            'tier' : tier
+            'tier' : org_data['tier']
         }
-        return render_template('signup.html', form=form, data=data)
+        return render_template('home/signup.html', form=form, data=data)
 
 
 ##############################################################################
@@ -567,12 +547,14 @@ def login():
         ## so we don't really know whether to show screen_hint=signup or prompt=login
         ##
         ##      ... we could make a call to the Auth0 API to lookup the user by email
+        ##      ... or we could just use a database
         ##
     '''
 
     return auth0.authorize_redirect( redirect_uri=REDIRECT_URI, 
                                      audience=AUTH0_AUDIENCE, 
                                      screen_hint=SCREEN_HINT,
+                                     connection=connection,
                                      organization=organization,
                                      invitation=invitation )
 
@@ -609,7 +591,7 @@ def dashboard():
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-        auth0_domain=AUTH0_DOMAIN,
+        auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
@@ -636,7 +618,7 @@ def org_dashboard():
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-        auth0_domain=AUTH0_DOMAIN,
+        auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
@@ -702,7 +684,11 @@ def org_dashboard():
     if login_uri is not None:
         data['login_uri'] = login_uri
 
+
     '''
+    ##
+    ## these values could be added to Auth0 metadata
+    ##
     data['project_name'] = PROJECT_NAME    
     data['environment'] = ENVIRONMENT_NAME    
     data['system_number'] = SYSTEM_NUMBER 
@@ -739,7 +725,6 @@ def profile_dashboard():
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-#        auth0_domain=AUTH0_DOMAIN,
         auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
@@ -768,7 +753,6 @@ def addons_dashboard():
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-#        auth0_domain=AUTH0_DOMAIN,
         auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
@@ -819,7 +803,6 @@ def addons_extended_dashboard(path):
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-#        auth0_domain=AUTH0_DOMAIN,
         auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
@@ -828,7 +811,7 @@ def addons_extended_dashboard(path):
     ##  1. get the add on name
     ##  2. get the user's org
     ##  3. add the add on to org metadata
-    ##  4. re-new token w/ addons
+    ##  4. re-new token w/ custom claims for addons
     ##
 
     addon = path
@@ -870,15 +853,6 @@ def addons_extended_dashboard(path):
     return redirect(login_uri)
 
 
-    '''
-    return render_template( 
-        'dash/addons.html',
-        session=session,
-        data=data 
-    )
-    '''
-
-
 ##############################################################################
 ##############################################################################
 ##
@@ -888,16 +862,53 @@ def addons_extended_dashboard(path):
 ##############################################################################
 
 
-@app.route('/dashboard/createconn/', methods=['GET', 'POST'])
+@app.route('/dashboard/createconn/', methods=['GET'])
 @requires_auth
 @requires_org_admin
 def create_connection():
 
+    data = get_token_data(
+        token=session['token']['access_token'], 
+        audience=AUTH0_AUDIENCE, 
+        auth0_domain=AUTH0_AUTH_DOMAIN,
+        claims_list=custom_claims
+    )
+
+    if 'custom_claims' in data:
+        custom_claim_data = data['custom_claims']
+    else:
+        custom_claim_data = {}
+
+
+    if 'org_id' in session[JWT_PAYLOAD_KEY]:
+        org_id = session[JWT_PAYLOAD_KEY]['org_id']
+
+    if 'roles' in data and org_admin_role in data['roles']:
+        data['is_org_admin'] = True
+    else:
+        data['is_org_admin'] = False
+
+
+    return render_template('dash/connection.html', data=data)
+
+
+##############################################################################
+##############################################################################
+##
+## create SAML connection
+##
+##############################################################################
+##############################################################################
+
+
+@app.route('/dashboard/createconn/saml', methods=['GET', 'POST'])
+@requires_auth
+@requires_org_admin
+def create_saml_connection():
 
     data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-#        auth0_domain=AUTH0_DOMAIN,
         auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
@@ -912,16 +923,26 @@ def create_connection():
         org_id = session[JWT_PAYLOAD_KEY]['org_id']
 
 
-    form = CreateConnectionForm()
+    form = CreateSAMLConnectionForm()
 
     if request.method == 'POST':
 
         if form.validate_on_submit():
 
             conn_name = form.conn_name.data
-            conn_strategy = form.conn_strategy.data
-            sign_req_algo = form.sign_req_algo.data
+            conn_id = form.conn_id.data
+            icon_url = form.icon_url.data
+
+            ##
+            ## this connection form is specific to SAML connections
+            ## so it is unncessary to allow the user to select a strategy
+            ## if this changes ... uncomment the line below:
+            ##
+            #conn_strategy = form.conn_strategy.data
+            conn_strategy = connection_strategies['SAML']
+
             sign_req_digest = form.sign_req_digest.data
+            sign_req_algo = form.sign_req_algo.data
             signin_url = form.signin_url.data
             x509_cert = form.x509_cert.data.read()
 
@@ -930,9 +951,9 @@ def create_connection():
             else:
                 assign_membership_on_login = False
 
-
             data = {
-                'name' : conn_name,
+                'name' : conn_id,
+                'display_name' : conn_name,
                 'strategy' : conn_strategy,
                 'sign_req_algo' : sign_req_algo,
                 'sign_req_digest' : sign_req_digest,
@@ -942,6 +963,13 @@ def create_connection():
                     'org_id' : org_id
                 }
             }
+
+            data['show_as_button'] = 'false'
+
+            if not icon_url == '':
+                data['show_as_button'] = 'true'
+                data['icon_url'] = icon_url
+
 
             connection = auth0_mgmt.create_connection(**data)
 
@@ -953,15 +981,14 @@ def create_connection():
                 assign_membership_on_login=assign_membership_on_login
             )
 
-
-            auth0_domain_pre = AUTH0_DOMAIN.split('.')[0]
+            auth0_domain_pre = AUTH0_AUTH_DOMAIN.split('.')[0]
             data['connection_id'] = conn_id
-            data['audience_uri'] = 'urn:auth0:{}:{}'.format(auth0_domain_pre, conn_name)
+            data['audience_uri'] = 'urn:auth0:{}:{}'.format(auth0_domain_pre, conn_id)
             data['sso_url'] = AUTH0_CALLBACK_URL
             data['recipient_url'] = AUTH0_CALLBACK_URL
             data['destination_url'] = AUTH0_CALLBACK_URL
 
-            return render_template('dash/connection.html', data=data)
+            return render_template('dash/connection_saml.html', data=data)
 
         else:
 
@@ -971,18 +998,18 @@ def create_connection():
                 'form_errors' : form.errors
             }
 
-            return render_template('dash/connection.html', data=data)
+            return render_template('dash/connection_saml.html', data=data)
 
     else:
         data = {}
-        return render_template('dash/connection.html', form=form, data=data)
+        return render_template('dash/connection_saml.html', form=form, data=data)
 
 
 
 ##############################################################################
 ##############################################################################
 ##
-## create connection
+## create invitation
 ##
 ##############################################################################
 ##############################################################################
@@ -993,22 +1020,33 @@ def create_connection():
 @requires_org_admin
 def create_invitation():
 
-
     data = {}
 
     token_data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
-#        auth0_domain=AUTH0_DOMAIN,
         auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
-    form = CreateInviteForm()
+    role_choices = []
+    role_choices.append(tuple(['None', 'None']))
+
+    for r in role_id_list:
+        role_choices.append(tuple([role_id_list[r], r]))
+
+
+    logging.debug('[+] Role choices: {}'.format(role_choices))
+
+    form = CreateInviteForm(role_list=role_choices)
 
     if request.method == 'POST':
 
+        logging.debug('[+] Invite form has been posted')
+
         if form.validate_on_submit():
+
+            logging.debug('[+] Invite form has been validated')
 
             if 'email' in session[USER_PROFILE_KEY]:
                 data['inviter'] = {'name' : session[USER_PROFILE_KEY]['email']}
@@ -1019,6 +1057,10 @@ def create_invitation():
                 data['inviter'] = {'name' : 'foo'}
 
             email = form.email.data
+            role_select = form.roles.data
+
+            logging.debug('[+] Creating invite for: {} -- {}'.format(email, role_select))
+
 
             ##
             ## because this function requires OrgAdmin role
@@ -1035,10 +1077,21 @@ def create_invitation():
             data['client_id'] = AUTH0_CLIENT_ID
             data['send_invitation_email'] = True
 
-            member_role = '{}-{}-OrgMember'.format(PROJECT_NAME, ENVIRONMENT_NAME)
-            role_id = role_id_list[member_role]
+            try:
 
-            data['roles'] = [role_id]
+                if role_select == 'None':
+                    member_role = '{}-{}-{}-OrgMember'.format(PROJECT_NAME, ENVIRONMENT_NAME, SYSTEM_NUMBER)
+                    role_id = role_id_list[member_role]
+                    data['roles'] = [role_id]
+                else:
+                    data['roles'] = [role_select]
+
+            except Exception as e:
+                logging.debug('[+] Error selecting role: {}'.format(e))
+
+
+            logging.debug('[+] Org ID: {}'.format(org_id))
+            logging.debug('[+] Invite Data: {}'.format(data))
 
             invite = auth0_mgmt.create_org_invite(org_id=org_id, data=data)
 
@@ -1054,9 +1107,16 @@ def create_invitation():
                 'form_errors' : form.errors
             }
 
+            logging.debug('[+] Invite form did not validate: {}'.format(form.errors))
+            logging.debug('[+] Roles data: {}'.format(form.roles.data))
+            logging.debug('[+] Roles data type: {}'.format(type(form.roles.data)))
+
             return render_template('dash/invite.html', data=data)
 
     else:
+
+        form.roles.choices = role_choices
+        form.roles.default = role_choices[0]
         data = {}
         return render_template('dash/invite.html', form=form, data=data)
 
@@ -1073,7 +1133,7 @@ def create_invitation():
 @app.route('/support/')
 @requires_auth
 def support():
-    return render_template( 'support.html')
+    return render_template( 'home/support.html')
 
 
 ##############################################################################

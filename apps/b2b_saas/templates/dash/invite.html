@@ -1,19 +1,28 @@
 {% extends "dash/dashboard.html" %}
 
 {% block main_content %}
-    <h2>Invite a New Member</h2>
-
     {% if form is defined %}
-
         <div class="dashboard-form">
+            <h2>Invite a New Member</h2>
             <form method="POST" action="{{ url_for('create_invitation') }}" enctype="multipart/form-data">
                 {{ form.csrf_token }}
+
                 <div class="form-group">
                     <fieldset class="form-field">
                         {{ form.email.label }}
                         {{ form.email(class_="form-control") }}
                     </fieldset>
                 </div>
+
+                {% if form.roles is not none %}
+                    <div class="form-group">
+                        <fieldset class="form-field">
+                            {{ form.roles.label }}
+                            {{ form.roles(class_="form-control") }}
+                        </fieldset>
+                    </div>
+                {% endif %}
+
                 {{ form.submit(class_="btn btn-primary") }}
             </form>
         </div>
@@ -37,7 +46,7 @@
                     </tr>
                     <tr>
                         <th scope="row" class="profile-key">Invitee</th>
-                        <td class="profile-value">{{ data.invite_data.invitee.name }}</td>
+                        <td class="profile-value">{{ data.invite_data.invitee.email }}</td>
                     </tr>
                     <tr>
                         <th scope="row" class="profile-key">Roles</th>

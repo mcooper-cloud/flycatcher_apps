@@ -1,77 +1,43 @@
 {% extends "dash/dashboard.html" %}
 
 {% block main_content %}
-    <h2>Connections</h2>
+    <h2>Create an IdP Connection</h2>
 
-    {% if form is defined %}
-
-        <div class="dashboard-form">
-            <form method="POST" action="{{ url_for('create_connection') }}" enctype="multipart/form-data">
-                {{ form.csrf_token }}
-                <div class="form-group">
-                    <fieldset class="form-field">
-                        {{ form["conn_name"].label }}
-                        {{ form["conn_name"](class_="form-control") }}
-                    </fieldset>
-                </div>
-                <div class="form-group">
-                    <fieldset class="form-field">
-                        {{ form.conn_strategy.label }}
-                        {{ form.conn_strategy(class_="form-control") }}
-                    </fieldset>
-                </div>
-                <div class="form-group">
-                    <fieldset class="form-field">
-                        {{ form.sign_req_algo.label }}
-                        {{ form.sign_req_algo(class_="form-control") }}
-                    </fieldset>
-                </div>
-                <div class="form-group">
-                    <fieldset class="form-field">
-                        {{ form.sign_req_digest.label }}
-                        {{ form.sign_req_digest(class_="form-control") }}
-                    </fieldset>
-                </div>
-                <div class="form-group">
-                    <fieldset class="form-field">
-                        {{ form.signin_url.label }}
-                        {{ form.signin_url(class_="form-control") }}
-                    </fieldset>
-                </div>
-                <div class="form-group">
-                    <fieldset class="form-field">
-                        {{ form.x509_cert.label }}
-                        {{ form.x509_cert(class_="btn btn-outline-primary file-selector") }}
-                    </fieldset>
-                </div>
-                <div class="form-group">
-                    <fieldset class="form-field">
-                        {{ form.assign_membership_on_login.label }}
-                        {{ form.assign_membership_on_login(class_="radio-control") }}
-                    </fieldset>
-                </div>
-                {{ form.submit(class_="btn btn-primary") }}
-            </form>
+<div class="row dashboard-row">
+    <div class="col-sm-4 dashboard-grid">
+        <div class="dashboard-card">
+            {% if data.is_org_admin %}
+                <a href="/dashboard/createconn/saml" class="dashboard-option">
+                    <img class="dashboard-icon" src="https://identicons.dev/static/icons/mono/svg/icon-boundary-protocol.svg" alt="SAML">
+                    <div class="link-label">SAML</div>
+                </a>
+                <a class="btn btn-primary signup" href="/dashboard/createconn/saml">New SAML Connection</a>
+            {% endif %}
         </div>
-    {% endif %}
+    </div>
+    <div class="col-sm-4 dashboard-grid">
+        <div class="dashboard-card">
+            {% if data.is_org_admin %}
+                <a href="/dashboard/createconn/oidc" class="dashboard-option">
+                    <img class="dashboard-icon" src="https://identicons.dev/static/icons/mono/svg/icon-attributes.svg" alt="OIDC">
+                    <div class="link-label">OIDC</div>
+                </a>
+                <a class="btn btn-primary signup" href="/dashboard/createconn/oidc">New IODC Connection</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-sm-4 dashboard-grid">
+        <div class="dashboard-card">
+            {% if data.is_org_admin %}
+                <a href="/dashboard/createconn/oauth2" class="dashboard-option">
+                    <img class="dashboard-icon" src="https://identicons.dev/static/icons/mono/svg/icon-authentication-a.svg" alt="OAuth2">
+                    <div class="link-label">OAuth2</div>
+                </a>
+                <a class="btn btn-primary signup" href="/dashboard/createconn/oauth2">New OAuth2 Connection</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
-    {% if data is defined and {% if data|length > 0 %}
 
-        <table class="table-responsive table-striped table-sm">
-            <thead>
-                <tr>
-                    <th>Key</th>
-                    <th>Value</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for key, value in data.items() %}
-                    <tr>
-                        <th scope="row" class="profile-key">{{ key|e }}</th>
-                        <td class="profile-value">{{ value|e }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
 {% endblock %}

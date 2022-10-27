@@ -281,7 +281,6 @@ label.file-selector {
 
 .dashboard-option {}
 
-
 .dashboard-card .subscribed {
     background-image: url(https://openmoji.org/data/color/svg/2714.svg);
     background-repeat: no-repeat;
@@ -314,9 +313,25 @@ label.file-selector {
 }
 
 .dashboard-form {
-  width: 70%;
-  margin-left: 15%;
-  margin-right: 15%;
+
+    padding: 0;
+    background-color: #fff;
+    border: 1px solid #f0f3f7;
+    -webkit-transition: -webkit-transform .25s cubic-bezier(.215,.61,.355,1),-webkit-box-shadow .25s cubic-bezier(.215,.61,.355,1);
+    transition: -webkit-transform .25s cubic-bezier(.215,.61,.355,1),-webkit-box-shadow .25s cubic-bezier(.215,.61,.355,1);
+    transition: transform .25s cubic-bezier(.215,.61,.355,1),box-shadow .25s cubic-bezier(.215,.61,.355,1);
+    transition: transform .25s cubic-bezier(.215,.61,.355,1),box-shadow .25s cubic-bezier(.215,.61,.355,1),-webkit-transform .25s cubic-bezier(.215,.61,.355,1),-webkit-box-shadow .25s cubic-bezier(.215,.61,.355,1);
+    padding:  30px;
+
+    filter: drop-shadow(0 0.2rem 0.25rem rgba(0, 0, 0, 0.2));
+
+    border-radius:  1em;  
+    /*height: 90%;*/
+
+    width: 60%;
+    margin-left: 15%;
+    margin-right: 15%;
+
 }
 
 .dashboard-form label {
@@ -325,6 +340,14 @@ label.file-selector {
 }
 
 .dashboard-form .form-group {}
+
+.dashboard-form .tool-tip {
+    font-size: 80%;
+    padding: 5px;
+    padding-left: 20px;
+    color: #333;
+    text-align: left;
+}
 
 .jwt {
     background-image: url(https://jwt.io/img/pic_logo.svg);

@@ -178,11 +178,19 @@ class Auth0(object):
     ##########################################################################
 
 
-    def create_organization(self, email=None, name=None, tier=None, kwargs=None):
+    def create_organization(self, data=None, kwargs=None):
 
-        email = email
-        name = name
-        tier = tier
+        err = False
+
+        required_fields = ['email', 'name']
+        optional_fields = ['logo_url', 'primary_color', 'page_background_color', 'tier']
+
+
+        for r in required_fields:
+            if r not in data:
+                err = True
+
+
         org_json = None
         org_data = None
 
@@ -190,7 +198,13 @@ class Auth0(object):
         ## TODO: test that user has not already created an org w/ email
         ##
 
-        if email is not None and name is not None:
+        if not err:
+
+            email = data['email']
+            name = data['name']
+
+            if 'tier' in data:
+                tier = data['tier']
 
             org_data = {}
 
@@ -207,6 +221,28 @@ class Auth0(object):
                 'origin_email' : email,
                 'tier' : tier
             }
+
+
+            ##
+            ## add branding to the Org authentication experience
+            ##
+            branding = {}
+            colors = {}
+            if 'logo_url' in data:
+                branding['logo_url'] = data['logo_url']
+
+            if 'primary_color' in data:
+                colors['primary'] = data['primary_color']
+
+            if 'page_background_color' in data:
+                colors['page_background'] = data['page_background_color']
+
+
+            if len(branding) > 0:
+                org_data['branding'] = branding
+
+                if len(colors) > 0:
+                    org_data['branding']['colors'] = colors
 
             logging.debug('[+] Request payload {} for'.format(org_data))
 
@@ -407,6 +443,13 @@ class Auth0(object):
             ]
         }
 
+        optional_fields = {
+            'samlp' : [
+                'display_name', 'icon_url'
+            ]
+        }
+
+
         if 'strategy' not in kwargs:
             err = True
 
@@ -440,8 +483,20 @@ class Auth0(object):
                 }
             }
 
+            if 'icon_url' in kwargs:
+                req_data['options']['icon_url'] = kwargs['icon_url']
+
+            if 'display_name' in kwargs:
+                req_data['display_name'] = kwargs['display_name']
+
             if 'metadata' in kwargs:
                 req_data['metadata'] = kwargs['metadata']
+
+
+        '''
+        for o in optional_fields[kwargs['strategy']]:
+            req_data[o] = kwargs[o]
+        '''
 
         logging.debug('[+] Request Data: {}'.format(req_data))
 
@@ -452,7 +507,6 @@ class Auth0(object):
             header = {'Authorization' : 'Bearer {}'.format(self.access_token)}
             url = '{}/connections'.format(self.mgmt_endpoint)
             logging.debug('[+] Creating connection {}'.format(req_data))
-
 
             response = requests.post(url, json=req_data, headers=header)
 
@@ -560,6 +614,8 @@ class Auth0(object):
 
     def create_org_invite( self, org_id=None, data=None ):
 
+        logging.debug('[+] Beginning invitation creation')
+
         org_id = org_id
         data = data
 
@@ -570,7 +626,7 @@ class Auth0(object):
 
             header = {'Authorization' : 'Bearer {}'.format(self.access_token)}
 
-            logging.debug('[+] Request payload {} for'.format(data))
+            logging.debug('[+] Invitation request payload {} for org {}'.format(data, org_id))
 
             url = '{}/organizations/{}/invitations'.format(self.mgmt_endpoint, org_id)
 

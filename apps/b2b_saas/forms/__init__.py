@@ -23,21 +23,30 @@ class SignupForm(FlaskForm):
 ##############################################################################
 ##############################################################################
 ##
-##
+## SAML connection form
 ##
 ##############################################################################
 ##############################################################################
 
 
-class CreateConnectionForm(FlaskForm):
+class CreateSAMLConnectionForm(FlaskForm):
 
-    conn_name = StringField('Connection Name', validators=[DataRequired()])
+    conn_id = StringField('Connection Identifier', validators=[DataRequired()])
+    conn_name = StringField('Connection Display Name', validators=[DataRequired()])
+    icon_url = StringField('Icon URL', validators=[URL()])
 
+    '''
+    ##
+    ## currently designed to use separate forms for specific connection
+    ## types, therefore this field is unnecessary.  If design is changed
+    ## uncomment this stanza
+    ##
     conn_strategy = SelectField(
         'Connection Strategy',
         [DataRequired()],
         choices=[('samlp', 'SAML')]
     )
+    '''
 
     sign_req_digest = SelectField(
         'Sign Request Algorithm Digest',
@@ -74,7 +83,7 @@ class CreateConnectionForm(FlaskForm):
 #    x509_cert = FileField('X509 Signing Cert', validators=[FileRequired()])
     x509_cert = FileField('X509 Signing Cert')
 
-    submit = SubmitField('Create Connection')
+    submit = SubmitField('Create SAML Connection')
 
 
 ##############################################################################
@@ -89,4 +98,12 @@ class CreateConnectionForm(FlaskForm):
 class CreateInviteForm(FlaskForm):
 
     email = StringField('Email', validators=[Email(), DataRequired()])
+
+    roles = SelectField(
+        'Role',
+#        [DataRequired()],
+        coerce=str,
+        validate_choice=False        
+    )
+
     submit = SubmitField('Send Invite')
