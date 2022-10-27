@@ -5,8 +5,7 @@ exports.onExecutePostUserRegistration = async (event, api) => {
     //
     const { ManagementClient } = require("auth0@2.35.0");
 
-
-    const namespace = 'https://flycatcher.auth0.pintail.rocks';
+    const namespace = event.secrets.CUSTOM_SCOPE_NAMESPACE;
     const user = event.user
     const user_id = user.user_id
     const connection_id = event.connection.id

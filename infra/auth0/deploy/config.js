@@ -31,7 +31,7 @@ const config = {
 console.log(`[+] process.env.INPUT_PATH: ${process.env.INPUT_PATH}`)
 console.log(`[+] process.env.AUTH0_CALLBACK_URL: ${process.env.AUTH0_CALLBACK_URL}`)
 console.log(`[+] process.env.AUTH0_LOGOUT_URL: ${process.env.AUTH0_LOGOUT_URL}`)
-console.log(`[+] process.env.AUTH0_AUDIENCE: ${process.env.AUTH0_AUDIENCE}`)
+//console.log(`[+] process.env.AUTH0_AUDIENCE: ${process.env.AUTH0_AUDIENCE}`)
 
 
 deploy({
