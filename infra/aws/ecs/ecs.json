@@ -22,6 +22,16 @@
             "Description": "Logo URL",
             "Default": "USER_INPUT_REQUIRED"
         },
+        "PageBackgroundColor": {
+            "Type": "String",
+            "Description": "Page background color",
+            "Default": "USER_INPUT_REQUIRED"
+        },
+        "PrimaryColor": {
+            "Type": "String",
+            "Description": "Primary color",
+            "Default": "USER_INPUT_REQUIRED"
+        },
         "Auth0AuthDomain": {
             "Type": "String",
             "Description": "Auth0 Tenant Auth Domain",
@@ -725,6 +735,18 @@
                             {
                                 "Name": "AUTH0_AUDIENCE",
                                 "Value": {"Ref" : "Auth0Audience"}
+                            },
+                            {
+                                "Name": "LOGO_URL",
+                                "Value": {"Ref" : "LogoURL"}
+                            },
+                            {
+                                "Name": "PAGE_BACKGROUND_COLOR",
+                                "Value": {"Ref" : "PageBackgroundColor"}
+                            },
+                            {
+                                "Name": "PRIMARY_COLOR",
+                                "Value": {"Ref" : "PrimaryColor"}
                             },
                             {
                                 "Name": "AUTH0_CALLBACK_URL",

@@ -16,6 +16,14 @@
         "ParameterValue" : "{{ LogoURL }}"
     },
     {
+        "ParameterKey" : "PageBackgroundColor",
+        "ParameterValue" : "{{ PageBackgroundColor }}"
+    },
+    {
+        "ParameterKey" : "PrimaryColor",
+        "ParameterValue" : "{{ PrimaryColor }}"
+    },
+    {
         "ParameterKey" : "Auth0AuthDomain",
         "ParameterValue" : "{{ Auth0AuthDomain }}"
     },
