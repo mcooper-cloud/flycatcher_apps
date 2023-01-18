@@ -245,6 +245,12 @@ function get_parameter(){
 
 function auth0_deploy(){
 
+    echo "[+]"
+    echo "[+]"
+    echo "[+] Auth0 Deploy Starts Here"
+    echo "[+]"
+    echo "[+]"
+
     cd $AUTH0_DEPLOY_PATH
 
     export NODE_PATH=$(npm root -g)
@@ -272,6 +278,12 @@ function auth0_deploy(){
 
 
 function auth0_export(){
+
+    echo "[+]"
+    echo "[+]"
+    echo "[+] Auth0 Export Starts Here"
+    echo "[+]"
+    echo "[+]"
 
     cd $AUTH0_EXPORT_PATH
 
