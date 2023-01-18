@@ -1,3 +1,4 @@
+{% raw %}
 <!doctype html>
 <html lang="en">
     <head>
@@ -8,9 +9,13 @@
         <!-- font awesome from BootstrapCDN -->
         <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
         <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
+
         <title>Dashboard</title>
-        <link rel="icon" type="image/svg+xml" href="https://openmoji.org/data/color/svg/1F9A9.svg">
+{% endraw %}
+        <link rel="icon" type="image/svg+xml" href="{{ LogoURL }}">
+{% raw %}
         {% endblock %}
     </head>
     <body class="dashboard">
@@ -21,7 +26,10 @@
                 <nav class="col-md-2 d-none d-md-block bg-light sidebar">
                     <div class="sidebar-sticky">
                         <div class="dashboard-logo">
-                            <img src="https://openmoji.org/data/color/svg/1F9A9.svg" height="56" alt="Dashbaord">
+                            <!-- <img src="https://openmoji.org/data/color/svg/1F9A9.svg" height="56" alt="Dashbaord"> -->
+{% endraw %}
+                            <img src="{{ LogoURL }}" height="60" alt="Dashbaord">
+{% raw %}
                             <br/>
                             Dashboard
                         </div>
@@ -168,3 +176,4 @@
         {% endif %}
     </body>
 </html>
+{% endraw %}

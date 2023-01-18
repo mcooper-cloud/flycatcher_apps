@@ -54,8 +54,9 @@ h3 {
 
     background-image: var(--logo);
     background-repeat: no-repeat;
-    background-size: 75px 75px;
-    background-position: 50% 10px;
+    background-size: var(--logo-height-width);
+
+    background-position: 50% 30px;
 
     max-width: 500px;
 
@@ -161,8 +162,9 @@ input[type="submit"] {
 
     background-image: var(--logo);
     background-repeat: no-repeat;
-    background-size: 75px 75px;
-    background-position: 50% 10px;
+    /*background-size: 75px;*/
+    background-size: var(--logo-height-width);
+    background-position: 50% 30px;
 
     max-width: 500px;
 
@@ -347,8 +349,9 @@ td.profile-value{
 
 
 :root {
-  --main-bg-color: #F06292;
+  --main-bg-color: #303030;
   --main-fg-color:  white;
-  --main-hovor-color:  #D81B60;
-  --logo : url('https://openmoji.org/data/color/svg/1F9A9.svg');
+  --main-hovor-color:  #000000;
+  --logo : url('{{ LogoURL }}');
+  --logo-height-width : 150px;
 }

@@ -1,3 +1,4 @@
+{% raw %}
 <html>
     <head>
         {% block head %}
@@ -9,7 +10,9 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
         <link href="{{ url_for('static', filename='css/app.css') }}" rel="stylesheet">
         <title>Auth0 Demo</title>
-        <link rel="icon" type="image/svg+xml" href="https://openmoji.org/data/color/svg/1F9A9.svg">
+{% endraw %}
+        <link rel="icon" type="image/svg+xml" href="{{ LogoURL }}">
+{% raw %}
         {% endblock %}
     </head>
     <body class="home">
@@ -18,3 +21,4 @@
         {% endblock %}
     </body>
 </html>
+{% endraw %}
