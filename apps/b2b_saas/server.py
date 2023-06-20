@@ -151,9 +151,6 @@ def handle_auth_error(ex):
 
 oauth = OAuth(app)
 
-##
-## Auth0 authentication API client
-##
 auth0 = oauth.register(
     'auth0',
     client_id=AUTH0_CLIENT_ID,
@@ -167,23 +164,15 @@ auth0 = oauth.register(
     },
 )
 
-##
-## Auth0 Management API client
-##
 auth0_mgmt = Auth0( client_id=AUTH0_CLIENT_ID,
                     client_secret=AUTH0_CLIENT_SECRET,
                     auth0_domain=AUTH0_MGMT_DOMAIN )
 
 
-##
-## get the primary Auth0 DB connection ID
-##
 conn_data = auth0_mgmt.get_connection(name=CONNECTION_NAME)
 conn_id = conn_data[0]['id']
 
-##
-## get a list of role IDs
-##
+
 role_id_list = {}
 
 for r in ROLE_LIST:
@@ -583,7 +572,7 @@ def login():
 def logout():
     session.clear()
     params = {'returnTo': url_for('home', _external=True), 'client_id': AUTH0_CLIENT_ID}
-    return redirect('{}/v2/logout?{}'.format(auth0.api_base_url, urlencode(params)))
+    return redirect('{}/v2/logout?{}'.format(AUTH0_AUTH_URL, urlencode(params)))
 
 
 ##############################################################################

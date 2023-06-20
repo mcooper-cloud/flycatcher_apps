@@ -433,6 +433,7 @@ def login():
                                      screen_hint=SCREEN_HINT,
                                      organization=organization,
                                      invitation=invitation,
+                                     connection=connection,
                                      scope=scope )
 
 

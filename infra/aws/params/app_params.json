@@ -118,5 +118,17 @@
     {
         "ParameterKey" : "WebAppPort",
         "ParameterValue" : "{{ WebAppPort }}"
+    },
+    {
+        "ParameterKey" : "SSHCIDR",
+        "ParameterValue" : "{{ SSHCIDR }}"
+    },
+    {
+        "ParameterKey" : "DesiredCount",
+        "ParameterValue" : "{{ DesiredCount }}"
+    },
+    {
+        "ParameterKey" : "HealthCheckGracePeriodSeconds",
+        "ParameterValue" : "{{ HealthCheckGracePeriodSeconds }}"
     }
 ]
