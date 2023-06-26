@@ -325,9 +325,13 @@ def home():
             data['app_login_url'] = app_login_url
             data['auth0_login_url'] = auth0_login_url
 
-            return render_template('home.html', auth_data=data)
+            session['tmp_auth_data'] = data
+            return redirect(url_for('home'))
 
         else:
+            ##
+            ## form did not validate
+            ##
             title_message = 'Form did not validate'
 
             data = {
@@ -337,14 +341,25 @@ def home():
 
             return render_template('home.html', error_data=data)
 
+
     else:
+        ##
+        ## GET request
         ##
         ## TODO: remove signup form for authenticated users
         ##
-        data = {
-            'title_message' : title_message,
-        }
-        return render_template('home.html', form=form, data=data)
+
+        if 'tmp_auth_data' in session:
+            auth_data = session['tmp_auth_data']
+            session.pop('tmp_auth_data')
+            return render_template('home.html', auth_data=auth_data)
+
+        else:
+
+            data = {
+                'title_message' : title_message,
+            }
+            return render_template('home.html', form=form, data=data)
 
 
     return render_template('home.html')
