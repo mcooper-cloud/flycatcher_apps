@@ -130,5 +130,9 @@
     {
         "ParameterKey" : "HealthCheckGracePeriodSeconds",
         "ParameterValue" : "{{ HealthCheckGracePeriodSeconds }}"
+    },
+    {
+        "ParameterKey" : "LoadBalancerHealthcheckPath",
+        "ParameterValue" : "{{ LoadBalancerHealthcheckPath }}"
     }
 ]
