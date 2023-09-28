@@ -430,6 +430,8 @@ class Auth0(object):
 
     def create_connection(self, *args, **kwargs):
 
+        logging.debug('[+] Begin create connection')
+
         err = False
 
         req_data = None
@@ -440,12 +442,19 @@ class Auth0(object):
             'samlp' : [
                 'name', 'strategy', 'sign_req_algo', 
                 'sign_req_digest', 'signin_url', 'x509_cert'
+            ],
+            'okta' : [
+                'name', 'strategy', 'domain', 
+                'client_id', 'client_secret'
             ]
         }
 
         optional_fields = {
             'samlp' : [
                 'display_name', 'icon_url'
+            ],
+            'okta' : [
+                'icon_url'
             ]
         }
 
@@ -456,6 +465,7 @@ class Auth0(object):
 
         for r in required_fields[kwargs['strategy']]:
             if r not in kwargs:
+                logging.debug('[-] Error: required field missing: {}'.format(r))
                 err = True
                 break
 
@@ -463,11 +473,21 @@ class Auth0(object):
             return None 
 
 
+        ##
+        ##--------------------------------------------------------------------
+        ##
+        ## SAML connection
+        ##
+        ##--------------------------------------------------------------------
+        ##
+
         if kwargs['strategy'] == 'samlp':
 
             ##
             ## See: https://auth0.com/docs/connections/enterprise/saml
             ##
+
+            logging.debug('[+] Creating SAML Connection')
 
             req_data = { 
                 'strategy': kwargs['strategy'],
@@ -492,13 +512,56 @@ class Auth0(object):
             if 'metadata' in kwargs:
                 req_data['metadata'] = kwargs['metadata']
 
+            logging.debug('[+] SAML Connection Request Data: {}'.format(req_data))
+
+
+        ##
+        ##--------------------------------------------------------------------
+        ##
+        ## Okta connection
+        ##
+        ##--------------------------------------------------------------------
+        ##
+
+        elif kwargs['strategy'] == 'okta':
+
+            ##
+            ## See: https://auth0.com/docs/connections/enterprise/saml
+            ##
+
+            logging.debug('[+] Creating Okta Workforce Connection')
+
+            req_data = { 
+                'strategy': kwargs['strategy'],
+                'name': kwargs['name'],
+                'options' : { 
+                    'domain': kwargs['domain'], 
+                    'client_id': kwargs['client_id'], 
+                    'client_secret': kwargs['client_secret'], 
+                    'scope' : 'openid profile email'
+                }
+            }
+
+            if 'icon_url' in kwargs:
+                req_data['options']['icon_url'] = kwargs['icon_url']
+
+            if 'display_name' in kwargs:
+                req_data['display_name'] = kwargs['display_name']
+
+            if 'metadata' in kwargs:
+                req_data['metadata'] = kwargs['metadata']
+
+            logging.debug('[+] Okta Workforce Connection Request Data: {}'.format(req_data))
+
+
 
         '''
         for o in optional_fields[kwargs['strategy']]:
             req_data[o] = kwargs[o]
         '''
 
-        logging.debug('[+] Request Data: {}'.format(req_data))
+
+        logging.debug('[+] Create Connection Request Data: {}'.format(req_data))
 
         if req_data is not None:
 
@@ -514,6 +577,7 @@ class Auth0(object):
             logging.debug('[+] New Connection JSON: {}'.format(res_data))
 
             return res_data
+
 
 
     ##########################################################################
@@ -545,13 +609,11 @@ class Auth0(object):
             url = '{}/roles'.format(self.mgmt_endpoint)
 
 
-
         res = requests.get(url, headers=header)
         res_data = res.json()
         logging.debug('[+] Role JSON: {}'.format(res_data))
 
         return res_data
-
 
 
     ##########################################################################

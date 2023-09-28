@@ -35,7 +35,7 @@ from six.moves.urllib.parse import urlencode
 from flask_bootstrap import Bootstrap
 
 from auth0 import Auth0, JWT
-from forms import SignupForm, CreateSAMLConnectionForm, CreateInviteForm
+from forms import SignupForm, CreateOktaConnectionForm, CreateSAMLConnectionForm, CreateInviteForm
 
 
 import logging
@@ -94,6 +94,7 @@ ROLE_LIST = [
 
 connection_strategies = {
     'SAML' : 'samlp',
+    'okta' : 'okta',
 }
 
 custom_claim_namespace = WEB_APP_HTTP_URL
@@ -906,15 +907,15 @@ def create_connection():
 @requires_org_admin
 def create_saml_connection():
 
-    data = get_token_data(
+    token_data = get_token_data(
         token=session['token']['access_token'], 
         audience=AUTH0_AUDIENCE, 
         auth0_domain=AUTH0_AUTH_DOMAIN,
         claims_list=custom_claims
     )
 
-    if 'custom_claims' in data:
-        custom_claim_data = data['custom_claims']
+    if 'custom_claims' in token_data:
+        custom_claim_data = token_data['custom_claims']
     else:
         custom_claim_data = {}
 
@@ -951,7 +952,7 @@ def create_saml_connection():
             else:
                 assign_membership_on_login = False
 
-            data = {
+            conn_data = {
                 'name' : conn_id,
                 'display_name' : conn_name,
                 'strategy' : conn_strategy,
@@ -964,14 +965,14 @@ def create_saml_connection():
                 }
             }
 
-            data['show_as_button'] = 'false'
+            conn_data['show_as_button'] = 'false'
 
             if not icon_url == '':
-                data['show_as_button'] = 'true'
-                data['icon_url'] = icon_url
+                conn_data['show_as_button'] = 'true'
+                conn_data['icon_url'] = icon_url
 
 
-            connection = auth0_mgmt.create_connection(**data)
+            connection = auth0_mgmt.create_connection(**conn_data)
 
             conn_id = connection['id']
 
@@ -982,28 +983,136 @@ def create_saml_connection():
             )
 
             auth0_domain_pre = AUTH0_AUTH_DOMAIN.split('.')[0]
-            data['connection_id'] = conn_id
-            data['audience_uri'] = 'urn:auth0:{}:{}'.format(auth0_domain_pre, conn_id)
-            data['sso_url'] = AUTH0_CALLBACK_URL
-            data['recipient_url'] = AUTH0_CALLBACK_URL
-            data['destination_url'] = AUTH0_CALLBACK_URL
+            conn_data['connection_id'] = conn_id
+            conn_data['audience_uri'] = 'urn:auth0:{}:{}'.format(auth0_domain_pre, conn_id)
+            conn_data['sso_url'] = AUTH0_CALLBACK_URL
+            conn_data['recipient_url'] = AUTH0_CALLBACK_URL
+            conn_data['destination_url'] = AUTH0_CALLBACK_URL
 
-            return render_template('dash/connection_saml.html', data=data)
+            return render_template('dash/connection_saml.html', data=conn_data)
 
         else:
 
             title_message = 'Form did not validate'
-            data = {
+            conn_data = {
                 'title_message' : title_message,
                 'form_errors' : form.errors
             }
 
-            return render_template('dash/connection_saml.html', data=data)
+            return render_template('dash/connection_saml.html', data=conn_data)
 
     else:
-        data = {}
-        return render_template('dash/connection_saml.html', form=form, data=data)
+        conn_data = {}
+        return render_template('dash/connection_saml.html', form=form, data=conn_data)
 
+
+##############################################################################
+##############################################################################
+##
+## create Okta connection
+##
+##############################################################################
+##############################################################################
+
+
+@app.route('/dashboard/createconn/okta', methods=['GET', 'POST'])
+@requires_auth
+@requires_org_admin
+def create_okta_connection():
+    token_data = get_token_data(
+        token=session['token']['access_token'], 
+        audience=AUTH0_AUDIENCE, 
+        auth0_domain=AUTH0_AUTH_DOMAIN,
+        claims_list=custom_claims
+    )
+
+    if 'custom_claims' in token_data:
+        custom_claim_data = token_data['custom_claims']
+    else:
+        custom_claim_data = {}
+
+    if 'org_id' in session[JWT_PAYLOAD_KEY]:
+        org_id = session[JWT_PAYLOAD_KEY]['org_id']
+
+    form = CreateOktaConnectionForm()
+
+    if request.method == 'POST':
+
+        if form.validate_on_submit():
+
+            conn_id = form.conn_id.data
+            conn_name = form.conn_name.data
+            domain = form.domain.data
+            client_id = form.client_id.data
+            client_secret = form.client_secret.data
+            icon_url = form.icon_url.data
+
+            ##
+            ## this connection form is specific to Okta connections
+            ## so it is unncessary to allow the user to select a strategy
+            ## if this changes ... uncomment the line below:
+            ##
+            #conn_strategy = form.conn_strategy.data
+            conn_strategy = 'okta'
+
+
+            if form.assign_membership_on_login.data == 'True':
+                assign_membership_on_login = True
+            else:
+                assign_membership_on_login = False
+
+
+            conn_data = {
+                'name' : conn_id,
+                'display_name' : conn_name,
+                'strategy' : conn_strategy,
+                'domain' : domain,
+                'client_id' : client_id,
+                'client_secret' : client_secret,
+                'metadata': {
+                    'org_id' : org_id
+                }
+            }
+
+            conn_data['show_as_button'] = 'false'
+
+            if not icon_url == '':
+                conn_data['show_as_button'] = 'true'
+                conn_data['icon_url'] = icon_url
+
+
+            connection = auth0_mgmt.create_connection(**conn_data)
+
+            if connection is None:
+                print('[-] Error: connection is NOo')
+
+            conn_id = connection['id']
+
+            conn_enable = auth0_mgmt.enable_org_connection(
+                org_id=org_id, 
+                conn_id=conn_id,
+                assign_membership_on_login=assign_membership_on_login
+            )
+
+            auth0_domain_pre = AUTH0_AUTH_DOMAIN.split('.')[0]
+            conn_data['connection_id'] = conn_id
+            conn_data['callback_url'] = AUTH0_CALLBACK_URL
+
+            return render_template('dash/connection_okta.html', data=conn_data)
+
+        else:
+
+            title_message = 'Form did not validate'
+            conn_data = {
+                'title_message' : title_message,
+                'form_errors' : form.errors
+            }
+
+            return render_template('dash/connection_okta.html', data=conn_data)
+
+    else:
+        conn_data = {}
+        return render_template('dash/connection_okta.html', form=form, data=conn_data)
 
 
 ##############################################################################
@@ -1038,85 +1147,87 @@ def create_invitation():
 
     logging.debug('[+] Role choices: {}'.format(role_choices))
 
-    form = CreateInviteForm(role_list=role_choices)
+    form = CreateInviteForm(role_choices=role_choices)
+    form.roles.choices = role_choices
+    form.roles.default = role_choices[0]
 
     if request.method == 'POST':
 
         logging.debug('[+] Invite form has been posted')
 
-        if form.validate_on_submit():
+        try:
+            if form.validate_on_submit():
 
-            logging.debug('[+] Invite form has been validated')
+                logging.debug('[+] Invite form has been validated')
 
-            if 'email' in session[USER_PROFILE_KEY]:
-                data['inviter'] = {'name' : session[USER_PROFILE_KEY]['email']}
-            else:
-                ##
-                ## TODO: fix this
-                ##
-                data['inviter'] = {'name' : 'foo'}
-
-            email = form.email.data
-            role_select = form.roles.data
-
-            logging.debug('[+] Creating invite for: {} -- {}'.format(email, role_select))
-
-
-            ##
-            ## because this function requires OrgAdmin role
-            ## which is only assigned to org members after
-            ## an organizations authentication, then an org_id
-            ## must be present in the token payload
-            ##
-            org_id = token_data['org_id']
-
-            data['invitee'] = {
-                'email' : email
-            }
-
-            data['client_id'] = AUTH0_CLIENT_ID
-            data['send_invitation_email'] = True
-
-            try:
-
-                if role_select == 'None':
-                    member_role = '{}-{}-{}-OrgMember'.format(PROJECT_NAME, ENVIRONMENT_NAME, SYSTEM_NUMBER)
-                    role_id = role_id_list[member_role]
-                    data['roles'] = [role_id]
+                if 'email' in session[USER_PROFILE_KEY]:
+                    data['inviter'] = {'name' : session[USER_PROFILE_KEY]['email']}
                 else:
-                    data['roles'] = [role_select]
+                    ##
+                    ## TODO: fix this
+                    ##
+                    data['inviter'] = {'name' : 'foo'}
 
-            except Exception as e:
-                logging.debug('[+] Error selecting role: {}'.format(e))
+                email = form.email.data
+                role_select = form.roles.data
+
+                logging.debug('[+] Creating invite for: {} -- {}'.format(email, role_select))
 
 
-            logging.debug('[+] Org ID: {}'.format(org_id))
-            logging.debug('[+] Invite Data: {}'.format(data))
+                ##
+                ## because this function requires OrgAdmin role
+                ## which is only assigned to org members after
+                ## an organizations authentication, then an org_id
+                ## must be present in the token payload
+                ##
+                org_id = token_data['org_id']
 
-            invite = auth0_mgmt.create_org_invite(org_id=org_id, data=data)
+                data['invitee'] = {
+                    'email' : email
+                }
 
-            data['invite_data'] = invite
+                data['client_id'] = AUTH0_CLIENT_ID
+                data['send_invitation_email'] = True
 
-            return render_template('dash/invite.html', data=data)
+                try:
 
-        else:
+                    if role_select == 'None':
+                        member_role = '{}-{}-{}-OrgMember'.format(PROJECT_NAME, ENVIRONMENT_NAME, SYSTEM_NUMBER)
+                        role_id = role_id_list[member_role]
+                        data['roles'] = [role_id]
+                    else:
+                        data['roles'] = [role_select]
 
-            title_message = 'Form did not validate'
-            data = {
-                'title_message' : title_message,
-                'form_errors' : form.errors
-            }
+                except Exception as e:
+                    logging.debug('[+] Error selecting role: {}'.format(e))
 
-            logging.debug('[+] Invite form did not validate: {}'.format(form.errors))
-            logging.debug('[+] Roles data: {}'.format(form.roles.data))
-            logging.debug('[+] Roles data type: {}'.format(type(form.roles.data)))
 
-            return render_template('dash/invite.html', data=data)
+                logging.debug('[+] Org ID: {}'.format(org_id))
+                logging.debug('[+] Invite Data: {}'.format(data))
+
+                invite = auth0_mgmt.create_org_invite(org_id=org_id, data=data)
+
+                data['invite_data'] = invite
+
+                return render_template('dash/invite.html', data=data)
+
+            else:
+
+                title_message = 'Invite form did not validate'
+
+                logging.debug('[-] {}'.format(title_message))
+
+                data = {
+                    'title_message' : title_message,
+                    'form_errors' : form.errors
+                }
+
+                return render_template('dash/invite.html', data=data)
+
+        except Exception as e:
+            logging.debug('[-] {}'.format(e))
 
     else:
-
-        form.roles.choices = role_choices
-        form.roles.default = role_choices[0]
         data = {}
         return render_template('dash/invite.html', form=form, data=data)
 

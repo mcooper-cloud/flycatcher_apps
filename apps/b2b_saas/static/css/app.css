@@ -195,12 +195,14 @@ h3 {
 
 input.form-control {
     border: 2px solid #b3bac5;
+    text-align:justiy; 
+    font-size: 150%;
+    height: 50px;
 }
 
 select.form-control {
     border: 2px solid #b3bac5;
 }
-
 
 input.radio-control {}
 

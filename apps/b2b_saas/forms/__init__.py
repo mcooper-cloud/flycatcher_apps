@@ -89,6 +89,36 @@ class CreateSAMLConnectionForm(FlaskForm):
 ##############################################################################
 ##############################################################################
 ##
+## Okta connection form
+##
+##############################################################################
+##############################################################################
+
+class CreateOktaConnectionForm(FlaskForm):
+
+    conn_id = StringField('Connection Identifier', validators=[DataRequired()])
+    conn_name = StringField('Connection Name', validators=[DataRequired()])
+    icon_url = StringField('Icon URL', validators=[URL()])
+
+    domain = StringField('Okta Domain', validators=[DataRequired()])
+    client_id = StringField('Client ID', validators=[DataRequired()])
+    client_secret = PasswordField('Client Secret', validators=[DataRequired()])
+
+    assign_membership_on_login = RadioField(
+        'Assign Membership on Login', 
+        default=True,
+        choices=[
+            (True,'Yes'),
+            (False,'No')
+        ]
+    )
+
+    submit = SubmitField('Create Okta Connection')
+
+
+##############################################################################
+##############################################################################
+##
 ##
 ##
 ##############################################################################
@@ -97,13 +127,15 @@ class CreateSAMLConnectionForm(FlaskForm):
 
 class CreateInviteForm(FlaskForm):
 
+
     email = StringField('Email', validators=[Email(), DataRequired()])
 
     roles = SelectField(
         'Role',
 #        [DataRequired()],
         coerce=str,
-        validate_choice=False        
+        validate_choice=False,
+        choices=[]
     )
 
     submit = SubmitField('Send Invite')

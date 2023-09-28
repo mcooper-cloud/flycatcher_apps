@@ -1,0 +1,98 @@
+{% extends "dash/dashboard.html" %}
+
+{% block main_content %}
+
+    {% if form is defined %}
+
+        <div class="dashboard-form">
+            <h2>Create an Okta Workforce Connection</h2>
+            <form method="POST" action="{{ url_for('create_okta_connection') }}" enctype="multipart/form-data">
+                {{ form.csrf_token }}
+                <div class="form-group">
+                    <fieldset class="form-field">
+                        {{ form["conn_id"].label }}
+                        {{ form["conn_id"](class_="form-control") }}
+                    </fieldset>
+                    <p class="tool-tip">(required) This is a logical identifier of the connection. This name cannot be changed. (no spaces allowed)</p>
+                </div>
+                <div class="form-group">
+                    <fieldset class="form-field">
+                        {{ form["conn_name"].label }}
+                        {{ form["conn_name"](class_="form-control") }}
+                    </fieldset>
+                    <p class="tool-tip">(required) This will be the name displayed as 'Continue with [display name]' when users select this connection</p>
+                </div>
+                <div class="form-group">
+                    <fieldset class="form-field">
+                        {{ form["domain"].label }}
+                        {{ form["domain"](class_="form-control") }}
+                    </fieldset>
+                    <p class="tool-tip">
+                        (required) <a target="_blank" href="https://developer.okta.com/docs/guides/find-your-domain/main">
+                            Find your Okta domain
+                        </a>
+                    </p>
+                </div>
+                <div class="form-group">
+                    <fieldset class="form-field">
+                        {{ form["client_id"].label }}
+                        {{ form["client_id"](class_="form-control") }}
+                    </fieldset>
+                    <p class="tool-tip">
+                        (required) <a target="_blank" href="https://developer.okta.com/docs/guides/find-your-app-credentials/main">
+                            How to obtain your Okta client ID
+                        </a>
+                    </p>
+                </div>
+                <div class="form-group">
+                    <fieldset class="form-field">
+                        {{ form["client_secret"].label }}
+                        {{ form["client_secret"](class_="form-control") }}
+                    </fieldset>
+                    <p class="tool-tip">
+                        (required) <a target="_blank" href="https://developer.okta.com/docs/guides/find-your-app-credentials/main">
+                            How to obtain your Okta client Secret
+                        </a>
+                    </p>
+                </div>
+                <div class="form-group">
+                    <fieldset class="form-field">
+                        {{ form["icon_url"].label }}
+                        {{ form["icon_url"](class_="form-control") }}
+                    </fieldset>
+                    <p class="tool-tip">(optional) This will be the icon displayed when users select this connection</p>
+                </div>
+                <div class="form-group">
+                    <fieldset class="form-field">
+                        {{ form.assign_membership_on_login.label }}
+                        {{ form.assign_membership_on_login(class_="radio-control") }}
+                    </fieldset>
+                    <p class="tool-tip">This setting will allow your users authenticate with this identity provider (idP) automatically.</p>
+                    <p class="tool-tip"><b>yes</b>: All users within this IdP will be allowed to authenticate using this connection</p>
+                    <p class="tool-tip"><b>no</b>: Users within this IdP must first be invited before being allowed to authenticate using this connection</p>
+                </div>
+                {{ form.submit(class_="btn btn-primary") }}
+            </form>
+        </div>
+    {% endif %}
+
+    {% if (data is defined and data|length > 0) %}
+
+        <table class="table-responsive table-striped table-sm">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in data.items() %}
+                    <tr>
+                        <th scope="row" class="profile-key">{{ key|e }}</th>
+                        <td class="profile-value">{{ value|e }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endblock %}

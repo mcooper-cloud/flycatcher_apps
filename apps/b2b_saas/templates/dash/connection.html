@@ -15,6 +15,24 @@
             {% endif %}
         </div>
     </div>
+
+
+    <div class="col-sm-4 dashboard-grid">
+        <div class="dashboard-card">
+            {% if data.is_org_admin %}
+                <a href="/dashboard/createconn/okta" class="dashboard-option">
+                    <img class="dashboard-icon" src="https://www.okta.com/sites/default/files/media/image/2023-03/Okta_Aura_Black_S.png" alt="Okta">
+                    <div class="link-label">Okta Workforce</div>
+                </a>
+                <a class="btn btn-primary signup" href="/dashboard/createconn/okta">
+                    New Okta Workforce Connection
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <!--
     <div class="col-sm-4 dashboard-grid">
         <div class="dashboard-card">
             {% if data.is_org_admin %}
@@ -37,6 +55,8 @@
             {% endif %}
         </div>
     </div>
+    -->
+
 </div>
 
 
