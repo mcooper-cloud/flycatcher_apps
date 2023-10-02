@@ -178,7 +178,11 @@ role_id_list = {}
 
 for r in ROLE_LIST:
     role_data = auth0_mgmt.get_roles(name=r)
-    role_id_list[r] = role_data[0]['id']
+
+    if len(role_data) > 1:
+        role_id_list[r] = role_data[0]['id']
+    else:
+        continue
 
 
 
@@ -314,6 +318,19 @@ def get_token_data(token=None, audience=None, auth0_domain=None, claims_list=Non
 
     else:
         return None        
+
+
+##############################################################################
+##############################################################################
+##
+## STATUS ROUTE
+##
+##############################################################################
+##############################################################################
+
+@app.route('/status', methods=['GET'], strict_slashes=False)
+def status():
+    return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
 
 ##############################################################################
